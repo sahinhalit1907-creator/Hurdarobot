@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#171d27">
+<title>Hurda Heykel Atölyesi</title>
+<style>
+:root{--bg:#171d27;--pn:#202837;--ln:#2f3a4d;--tx:#e4e8f0;--mu:#98a3b8;--ac:#6fd6ff;--ok:#62d99a;--wn:#f2c14e;--bd:#ff7a7a;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;overscroll-behavior:none}
+body{position:fixed;inset:0;display:flex;justify-content:center;background:var(--bg);color:var(--tx);font:15px/1.45 "Avenir Next","Segoe UI",system-ui,sans-serif;-webkit-user-select:none;user-select:none;touch-action:manipulation;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+.app{display:flex;flex-direction:column;width:100%;max-width:560px;height:100%;min-height:0}
+header{padding:6px}
+.btns{display:flex;gap:4px}
+button{font:inherit;color:var(--tx);background:#2a3447;border:1px solid var(--ln);border-radius:8px;padding:8px 12px;cursor:pointer}
+button:hover{border-color:var(--ac)}
+button:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.btns button{flex:1;padding:8px 2px;font-size:12px}
+.go{background:var(--ac);border-color:var(--ac);color:#06222c;font-weight:700}
+.stagewrap{flex:1;min-height:0;position:relative}
+#stage{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+#status{position:absolute;left:8px;right:52px;top:8px;z-index:2;padding:4px 10px;border-radius:10px;background:#171d27cc;font-size:13px;line-height:1.35;color:var(--mu);pointer-events:none;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+#status:empty{display:none}
+.snd{position:absolute;top:8px;right:8px;z-index:3;width:36px;height:36px;padding:0;border-radius:50%;background:#171d27cc;font-size:16px}
+#status.ok{color:var(--ok)}#status.bad{color:var(--bd)}
+.tools{position:absolute;left:6px;right:6px;bottom:6px;z-index:2;display:flex;gap:4px}
+.tools button{flex:1;padding:7px 2px;font-size:13px;background:#171d27d9}
+.tabs{display:flex;gap:4px;padding:6px 6px 0;background:var(--pn);border-top:1px solid var(--ln)}
+.tabs button{flex:1;min-width:0;padding:6px 0;font-size:10px;letter-spacing:-.2px}
+.tabs button.act{background:var(--ac);border-color:var(--ac);color:#06222c;font-weight:700}
+.inv{display:grid;grid-template-columns:repeat(6,1fr);grid-auto-rows:min-content;align-content:start;gap:4px;padding:6px;min-height:136px;background:var(--pn)}
+.inv h2{display:none}
+.item{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0;overflow:hidden;padding:3px 1px;font-size:10px;line-height:1.1;touch-action:none;cursor:grab}
+.item span{max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item.sel{border-color:var(--ac);box-shadow:0 0 0 1px var(--ac)}
+.th{width:100%;height:40px;background:linear-gradient(#f1f3f6,#cdd2da);border-radius:6px}
+.selr{display:none;fill:none;stroke:#0a84ff;stroke-width:1.5;stroke-dasharray:4 3}
+.sel .selr{display:block}
+.bob{animation:bob .45s ease-in-out infinite alternate}
+.rig{transform-box:view-box;transform-origin:var(--ox) var(--oy)}
+.swing{animation:swing var(--d,.45s) ease-in-out infinite alternate;animation-delay:var(--dl,0s)}
+.loc{transform-box:fill-box;transform-origin:center}
+.blink{animation:blink 3.2s infinite}
+.talk{animation:talk .35s ease-in-out infinite alternate}
+.wig{animation:wig .3s ease-in-out infinite alternate}
+.boing{transform-origin:50% 100%;animation:boing .45s ease-in-out infinite alternate}
+.flutter{transform-origin:50% 0;animation:flutter .45s ease-in-out infinite alternate}
+.spin{animation:spin 1.6s linear infinite}
+.glow{animation:glow .9s ease-in-out infinite alternate}
+.roll{animation:roll var(--dt,2s) linear infinite alternate}
+#items.driving{animation:drive var(--dt,2s) linear infinite alternate}
+#items.still,#items.still .bob,#items.still .rig,#items.still .loc,#items.still .pf{animation:none!important}
+@keyframes bob{to{transform:translateY(-3px)}}
+@keyframes swing{from{transform:rotate(calc(var(--a)*-1deg))}to{transform:rotate(calc(var(--a)*1deg))}}
+@keyframes blink{0%,90%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+@keyframes talk{to{transform:scaleY(1.7)}}
+@keyframes wig{from{transform:rotate(-14deg)}to{transform:rotate(14deg)}}
+@keyframes boing{to{transform:scaleY(.8)}}
+@keyframes flutter{from{transform:rotate(-4deg)}to{transform:rotate(4deg)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes roll{to{transform:rotate(var(--wd,720deg))}}
+.shake{animation:shake .07s linear infinite alternate}
+.turn{animation:turn .9s ease-in-out infinite alternate}
+.pf{fill:#d5d9e0;opacity:0;transform-box:fill-box;transform-origin:center;animation:puff 1.2s ease-out infinite}
+@keyframes shake{from{transform:translate(-1.2px,-.6px)}to{transform:translate(1.2px,.6px)}}
+@keyframes turn{from{transform:rotate(-35deg)}to{transform:rotate(35deg)}}
+@keyframes puff{0%{opacity:.75;transform:translate(0,0) scale(.6)}100%{opacity:0;transform:translate(-28px,-16px) scale(2.6)}}
+@keyframes drive{from{transform:translateX(calc(var(--dd)*-1))}to{transform:translateX(var(--dd))}}
+@keyframes glow{to{filter:brightness(1.4)}}
+.ghost{position:fixed;width:64px;pointer-events:none;transform:translate(-50%,-50%);z-index:9;opacity:.92}
+.log{display:none;position:fixed;left:50%;transform:translateX(-50%);width:100%;max-width:560px;bottom:0;max-height:48dvh;overflow:auto;z-index:20;background:var(--pn);border:1px solid var(--ln);border-radius:14px 14px 0 0;padding:10px 12px calc(10px + env(safe-area-inset-bottom))}
+.log.open{display:block}
+.log div{padding:3px 0}
+.close{float:right;padding:6px 12px}
+.ok{color:var(--ok)}.warn{color:var(--wn)}.bad{color:var(--bd)}.mu{color:var(--mu)}
+.log .verdict{font-weight:700;padding:8px 10px;border-radius:8px;margin-bottom:6px}
+.log .verdict.ok{background:#62d99a1f}.log .verdict.bad{background:#ff7a7a1f}
+body.circ .tools [data-a]{display:none}
+.tools .cm{display:none}
+body.circ .tools .cm{display:block}
+#items.dim{opacity:.38;pointer-events:none}
+.lit{filter:drop-shadow(0 0 6px #ffd95a) brightness(1.35)}
+.thit{fill:transparent;cursor:crosshair}
+.term{fill:#e7c25a;stroke:#6e5420;stroke-width:1.2;pointer-events:none}
+.term.pos{fill:#ff5a4a}.term.neg{fill:#333}
+.wire{fill:none;stroke-width:4.5;stroke-linecap:round;pointer-events:none}
+.whit{fill:none;stroke:transparent;stroke-width:16;pointer-events:stroke}
+.wsel{display:none;fill:none;stroke:#0a84ff;stroke-opacity:.45;stroke-width:10;stroke-linecap:round;pointer-events:none}
+.sel>.wsel{display:block}
+.wflow{fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-dasharray:3 10;animation:dash .5s linear infinite;pointer-events:none}
+.wprev{fill:none;stroke:#0a84ff;stroke-width:3;stroke-dasharray:5 5;pointer-events:none}
+.cc.run{filter:drop-shadow(0 0 7px #35c8ff)}
+.clab{font:700 10px Arial,sans-serif;fill:#26303f;text-anchor:middle;paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round;pointer-events:none}
+@keyframes dash{to{stroke-dashoffset:-13}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+
+<!-- Parça çizimleri: metal gradyanları ve gölgeler -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<linearGradient id="gM"><stop offset="0" stop-color="#6b7482"/><stop offset=".2" stop-color="#e3e8f0"/><stop offset=".4" stop-color="#fafbfd"/><stop offset=".6" stop-color="#a9b2bf"/><stop offset=".85" stop-color="#d5dbe4"/><stop offset="1" stop-color="#5f6876"/></linearGradient>
+<linearGradient id="gMv" href="#gM" x2="0" y2="1"/>
+<linearGradient id="gF" x2="1" y2="1"><stop offset="0" stop-color="#f6f8fb"/><stop offset=".5" stop-color="#b3bbc8"/><stop offset="1" stop-color="#eef1f5"/></linearGradient>
+<radialGradient id="gD" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#fff"/><stop offset=".55" stop-color="#b9c1cd"/><stop offset="1" stop-color="#6b7482"/></radialGradient>
+<linearGradient id="gB" x2="1" y2="1"><stop offset="0" stop-color="#f7e29a"/><stop offset=".5" stop-color="#b58a2f"/><stop offset="1" stop-color="#ecd073"/></linearGradient>
+<linearGradient id="gBv" href="#gB" x2="0" y2="1"/>
+<radialGradient id="gR" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#ff9a8a"/><stop offset=".6" stop-color="#c8312a"/><stop offset="1" stop-color="#7a1712"/></radialGradient>
+<linearGradient id="gBl" x2="0" y2="1"><stop offset="0" stop-color="#4a7fe0"/><stop offset="1" stop-color="#1b3a8a"/></linearGradient>
+<linearGradient id="gBg" x2="0" y2="1"><stop offset="0" stop-color="#f1f3f6"/><stop offset="1" stop-color="#cdd2da"/></linearGradient>
+<linearGradient id="gW" x2="0" y2="1"><stop offset="0" stop-color="#9a7a55"/><stop offset=".1" stop-color="#7d5f40"/><stop offset="1" stop-color="#4f3a27"/></linearGradient>
+<linearGradient id="gG"><stop offset="0" stop-color="#14402a"/><stop offset=".25" stop-color="#4fae7a"/><stop offset=".45" stop-color="#c3ecd3"/><stop offset=".65" stop-color="#3f9a68"/><stop offset="1" stop-color="#12392a"/></linearGradient>
+<linearGradient id="gRd"><stop offset="0" stop-color="#6d130f"/><stop offset=".25" stop-color="#d8362b"/><stop offset=".45" stop-color="#ff7d6e"/><stop offset=".65" stop-color="#c22d24"/><stop offset="1" stop-color="#5e100d"/></linearGradient>
+<linearGradient id="gH"><stop offset="0" stop-color="#8d6a43"/><stop offset=".45" stop-color="#d1aa70"/><stop offset="1" stop-color="#7a5836"/></linearGradient>
+<linearGradient id="gK"><stop offset="0" stop-color="#1c2027"/><stop offset=".4" stop-color="#586071"/><stop offset="1" stop-color="#1a1d23"/></linearGradient>
+<radialGradient id="gGl" cx=".4" cy=".35" r=".75"><stop offset="0" stop-color="#fff"/><stop offset=".6" stop-color="#d7ecfa"/><stop offset="1" stop-color="#8fbbd9"/></radialGradient>
+<linearGradient id="gW2" x2="0" y2="1"><stop offset="0" stop-color="#4d433c"/><stop offset="1" stop-color="#26211d"/></linearGradient>
+<radialGradient id="gBall" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#b9f0cf"/><stop offset=".55" stop-color="#2f8a5a"/><stop offset="1" stop-color="#0f3b27"/></radialGradient>
+<radialGradient id="gBr" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#fff3c0"/><stop offset=".55" stop-color="#d1a640"/><stop offset="1" stop-color="#7a5a18"/></radialGradient>
+<radialGradient id="gEye" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#fff"/><stop offset=".7" stop-color="#e8ecf2"/><stop offset="1" stop-color="#aab2bf"/></radialGradient>
+<radialGradient id="gIris" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#9fd8ff"/><stop offset=".6" stop-color="#2f6fb0"/><stop offset="1" stop-color="#123a66"/></radialGradient>
+<linearGradient id="gW3" x2="0" y2="1"><stop offset="0" stop-color="#7a4f2f"/><stop offset="1" stop-color="#47281a"/></linearGradient>
+<linearGradient id="gPk"><stop offset="0" stop-color="#7d2434"/><stop offset=".4" stop-color="#e0707c"/><stop offset="1" stop-color="#7d2434"/></linearGradient>
+<linearGradient id="gBu"><stop offset="0" stop-color="#0f2f55"/><stop offset=".3" stop-color="#3f7fc4"/><stop offset=".45" stop-color="#9ac4ee"/><stop offset=".7" stop-color="#2f6aa8"/><stop offset="1" stop-color="#0c2644"/></linearGradient>
+<linearGradient id="gCu"><stop offset="0" stop-color="#5a3020"/><stop offset=".3" stop-color="#d98a5e"/><stop offset=".45" stop-color="#f3c09a"/><stop offset=".7" stop-color="#b0623c"/><stop offset="1" stop-color="#4f2a1b"/></linearGradient>
+<linearGradient id="gCar" x2="0" y2="1"><stop offset="0" stop-color="#ff7a6a"/><stop offset=".35" stop-color="#d8362b"/><stop offset=".75" stop-color="#a61f17"/><stop offset="1" stop-color="#6d130f"/></linearGradient>
+<linearGradient id="gGlass" x2="0" y2="1"><stop offset="0" stop-color="#d6f0fc"/><stop offset="1" stop-color="#5f93b5"/></linearGradient>
+<radialGradient id="gLamp" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#fff7d0"/><stop offset=".6" stop-color="#ffd95a"/><stop offset="1" stop-color="#b98a1a"/></radialGradient>
+<linearGradient id="gBox" x2="0" y2="1"><stop offset="0" stop-color="#86c862"/><stop offset="1" stop-color="#3f7a2a"/></linearGradient>
+<filter id="sh" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="3" dy="4" stdDeviation="3" flood-color="#1d2430" flood-opacity=".4"/></filter>
+
+<symbol id="p-can" viewBox="0 0 70 92"><path d="M2 8V84Q35 96 68 84V8Z" fill="url(#gM)"/><path d="M2 24Q35 34 68 24M2 40Q35 50 68 40M2 56Q35 66 68 56M2 72Q35 82 68 72" fill="none" stroke="#586171" stroke-width="1.5"/><path d="M2 26Q35 36 68 26M2 42Q35 52 68 42M2 58Q35 68 68 58M2 74Q35 84 68 74" fill="none" stroke="#fff" stroke-opacity=".7"/><ellipse cx="35" cy="8" rx="33" ry="7" fill="url(#gD)" stroke="#6b7482"/><ellipse cx="35" cy="8" rx="25" ry="4.5" fill="none" stroke="#8c95a3"/></symbol>
+<symbol id="p-bowl" viewBox="0 0 70 50"><path d="M3 44Q3 3 35 3Q67 3 67 44Z" fill="url(#gD)" stroke="#6b7482"/><ellipse cx="35" cy="44" rx="33" ry="5" fill="url(#gMv)" stroke="#6b7482"/><g fill="#39414f"><circle cx="20" cy="30" r="1.5"/><circle cx="29" cy="24" r="1.5"/><circle cx="41" cy="24" r="1.5"/><circle cx="50" cy="30" r="1.5"/><circle cx="35" cy="33" r="1.5"/><circle cx="24" cy="38" r="1.5"/><circle cx="46" cy="38" r="1.5"/><circle cx="35" cy="14" r="1.5"/></g></symbol>
+<symbol id="p-spoon" viewBox="0 0 26 110"><path d="M10 2H16L18 64H8Z" fill="url(#gF)" stroke="#7b8493" stroke-width=".8"/><ellipse cx="13" cy="85" rx="12" ry="24" fill="url(#gF)" stroke="#7b8493"/><ellipse cx="13" cy="87" rx="8" ry="18" fill="#a6afbd" opacity=".55"/><ellipse cx="9.5" cy="80" rx="2.5" ry="10" fill="#fff" opacity=".75"/></symbol>
+<symbol id="p-fork" viewBox="0 0 26 110"><path d="M10 54H16L18 108H8Z" fill="url(#gF)" stroke="#7b8493" stroke-width=".8"/><path d="M2 3h4v30h2V3h4v30h2V3h4v30h2V3h4v37q0 12-11 16h-2Q2 52 2 40Z" fill="url(#gF)" stroke="#7b8493" stroke-width=".8"/></symbol>
+<symbol id="p-tin" viewBox="0 0 70 32"><path d="M14 3H56L69 25H1Z" fill="url(#gB)" stroke="#7a6130"/><path d="M1 25q4.9 7 9.7 0q4.9 7 9.7 0q4.9 7 9.7 0q4.9 7 9.7 0q4.9 7 9.7 0q4.9 7 9.7 0q4.9 7 9.7 0" fill="url(#gB)" stroke="#7a6130"/><path d="M22 3L14 25M30 3L24 25M38 3L35 25M46 3V25M54 3L58 25" stroke="#7a6130" stroke-opacity=".5" fill="none"/></symbol>
+<symbol id="p-pan" viewBox="0 0 190 56"><path d="M6 16H184L180 46Q95 62 10 46Z" fill="url(#gM)" stroke="#555e6d"/><ellipse cx="95" cy="16" rx="89" ry="13" fill="url(#gD)" stroke="#555e6d"/><ellipse cx="95" cy="17" rx="74" ry="8" fill="#8f98a7" opacity=".55"/></symbol>
+<symbol id="p-bolt" viewBox="0 0 64 18"><rect x="13" y="4" width="50" height="10" rx="1" fill="url(#gBv)"/><path d="M17 9H62" stroke="#4f3f17" stroke-width="10" stroke-dasharray="1.1 3.1" opacity=".75"/><rect x="1" y="0" width="14" height="18" rx="2.5" fill="url(#gBv)" stroke="#6e5420"/></symbol>
+<symbol id="p-washer" viewBox="0 0 30 30"><circle cx="15" cy="15" r="14" fill="url(#gD)" stroke="#6b7482"/><circle cx="15" cy="15" r="8" fill="#2c323c" stroke="#e9edf3" stroke-width="1.4"/><circle cx="15" cy="15" r="4.6" fill="url(#gR)"/><circle cx="13.6" cy="13.4" r="1.4" fill="#fff" opacity=".85"/></symbol>
+<symbol id="p-cap" viewBox="0 0 30 30"><circle cx="15" cy="15" r="13.4" fill="none" stroke="#d8b8a2" stroke-width="3" stroke-dasharray="2.3 1.7"/><circle cx="15" cy="15" r="11.6" fill="url(#gR)" stroke="#6e1511"/><circle cx="15" cy="15" r="7" fill="none" stroke="#fff" stroke-opacity=".35"/><ellipse cx="11.5" cy="10.5" rx="4" ry="2.2" fill="#fff" opacity=".5"/></symbol>
+<symbol id="p-chain" viewBox="0 0 20 84"><g fill="none" stroke="url(#gM)" stroke-width="3.2"><rect x="3" y="2" width="14" height="24" rx="7"/><rect x="7" y="20" width="6" height="24" rx="3"/><rect x="3" y="38" width="14" height="24" rx="7"/><rect x="7" y="56" width="6" height="24" rx="3"/></g></symbol>
+<symbol id="p-spring" viewBox="0 0 26 40"><g fill="none" stroke="url(#gM)" stroke-width="3.2"><ellipse cx="13" cy="5" rx="11" ry="3.2"/><ellipse cx="13" cy="10" rx="11" ry="3.2"/><ellipse cx="13" cy="15" rx="11" ry="3.2"/><ellipse cx="13" cy="20" rx="11" ry="3.2"/><ellipse cx="13" cy="25" rx="11" ry="3.2"/><ellipse cx="13" cy="30" rx="11" ry="3.2"/><ellipse cx="13" cy="35" rx="11" ry="3.2"/></g></symbol>
+<symbol id="p-tab" viewBox="0 0 28 38"><path d="M14 2C5 2 3 12 5 20C6 27 9 36 14 36S22 27 23 20C25 12 23 2 14 2Z" fill="url(#gF)" stroke="#6b7482"/><ellipse cx="14" cy="26" rx="5.5" ry="7.5" fill="#2c323c" stroke="#e9edf3"/><ellipse cx="14" cy="10" rx="4" ry="3" fill="#2c323c" stroke="#e9edf3"/></symbol>
+<symbol id="p-soda" viewBox="0 0 56 88"><path d="M3 10V78Q28 88 53 78V10Z" fill="url(#gRd)"/><path d="M3 22Q28 28 53 22M3 66Q28 72 53 66" fill="none" stroke="#fff" stroke-opacity=".75" stroke-width="2.2"/><text transform="translate(28 48) rotate(-90)" font-size="13" font-weight="700" fill="#fff" text-anchor="middle" font-family="Arial,sans-serif">KOLA</text><ellipse cx="28" cy="10" rx="25" ry="5.5" fill="url(#gD)" stroke="#6b7482"/><ellipse cx="28" cy="10" rx="19" ry="3.6" fill="none" stroke="#8c95a3"/></symbol>
+<symbol id="p-tuna" viewBox="0 0 76 40"><path d="M2 8V32Q38 42 74 32V8Z" fill="url(#gM)"/><path d="M2 16Q38 24 74 16M2 24Q38 32 74 24" fill="none" stroke="#586171" stroke-width="1.2"/><ellipse cx="38" cy="8" rx="36" ry="6" fill="url(#gD)" stroke="#6b7482"/><ellipse cx="38" cy="8" rx="28" ry="4" fill="none" stroke="#8c95a3"/></symbol>
+<symbol id="p-bottle" viewBox="0 0 40 120"><path d="M14 14H26V38Q38 48 38 66V112Q38 118 32 118H8Q2 118 2 112V66Q2 48 14 38Z" fill="url(#gG)" fill-opacity=".88" stroke="#14402a" stroke-width="1.2"/><rect x="5" y="74" width="30" height="30" fill="#e8dcc0" opacity=".92"/><text x="20" y="93" font-size="8" font-weight="700" fill="#5a4a2a" text-anchor="middle" font-family="Arial,sans-serif">CAM</text><path d="M7 66V72M7 106V111" stroke="#fff" stroke-opacity=".6" stroke-width="3" stroke-linecap="round"/><path d="M16 40Q14 52 7 62" stroke="#fff" stroke-opacity=".5" fill="none" stroke-width="2"/><rect x="12" y="3" width="16" height="12" rx="2" fill="url(#gR)" stroke="#6e1511"/></symbol>
+<symbol id="p-whisk" viewBox="0 0 30 110"><g fill="none" stroke="#9aa3b2" stroke-width="1.6"><path d="M15 70C-4 60 -2 20 15 4C32 20 34 60 15 70Z"/><path d="M15 70C5 58 6 22 15 4C24 22 25 58 15 70Z"/><path d="M15 70C10 54 11 24 15 4C19 24 20 54 15 70Z"/></g><path d="M15 70C-4 60 -2 20 15 4" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width=".7"/><rect x="11" y="66" width="8" height="42" rx="3.5" fill="url(#gH)" stroke="#4a3520"/><rect x="10" y="64" width="10" height="6" rx="2" fill="url(#gM)"/></symbol>
+<symbol id="p-ladle" viewBox="0 0 34 110"><path d="M15 2H19L20 74H14Z" fill="url(#gF)" stroke="#7b8493" stroke-width=".8"/><path d="M3 76Q3 108 17 108Q31 108 31 76Z" fill="url(#gD)" stroke="#6b7482"/><ellipse cx="17" cy="76" rx="14" ry="4.5" fill="url(#gMv)" stroke="#6b7482"/><ellipse cx="17" cy="76" rx="10" ry="2.8" fill="#7e8795"/></symbol>
+<symbol id="p-lid" viewBox="0 0 80 44"><rect x="34" y="1" width="12" height="7" rx="2" fill="url(#gK)"/><rect x="31" y="7" width="18" height="5" rx="2" fill="url(#gK)"/><path d="M4 38Q6 12 40 12Q74 12 76 38Z" fill="url(#gD)" stroke="#6b7482"/><ellipse cx="40" cy="38" rx="37" ry="5" fill="url(#gMv)" stroke="#6b7482"/><path d="M16 28Q22 17 36 15" stroke="#fff" stroke-opacity=".7" fill="none" stroke-width="2.4" stroke-linecap="round"/></symbol>
+<symbol id="p-funnel" viewBox="0 0 56 62"><path d="M2 8L21 38V60H35V38L54 8Z" fill="url(#gM)" stroke="#6b7482"/><ellipse cx="28" cy="8" rx="26" ry="5" fill="url(#gMv)" stroke="#6b7482"/><ellipse cx="28" cy="8" rx="21" ry="3.4" fill="#7e8795"/><path d="M8 13L22 36" stroke="#fff" stroke-opacity=".7" stroke-width="2" fill="none"/></symbol>
+<symbol id="p-knife" viewBox="0 0 24 120"><path d="M4 3Q20 24 20 70H4Z" fill="url(#gF)" stroke="#7b8493" stroke-width=".8"/><path d="M8 22Q13 42 12 66" stroke="#fff" stroke-opacity=".7" fill="none" stroke-width="1.6"/><rect x="3" y="70" width="18" height="5" rx="1.5" fill="url(#gM)"/><rect x="5" y="75" width="14" height="42" rx="5" fill="url(#gK)"/><circle cx="12" cy="86" r="1.6" fill="#c9cfda"/><circle cx="12" cy="106" r="1.6" fill="#c9cfda"/></symbol>
+<symbol id="p-wrench" viewBox="0 0 36 110"><path d="M12 50H24L25.5 96Q25.5 106 18 106Q10.5 106 10.5 96Z" fill="url(#gM)" stroke="#555e6d"/><path d="M6 6H14V20H22V6H30Q36 6 34 22Q32 54 18 56Q4 54 2 22Q0 6 6 6Z" fill="url(#gM)" stroke="#555e6d"/><circle cx="18" cy="97" r="4" fill="#3a414d"/></symbol>
+<symbol id="p-hammer" viewBox="0 0 56 110"><rect x="22" y="14" width="12" height="94" rx="4" fill="url(#gH)" stroke="#4a3520"/><path d="M4 6H44L50 10V26L44 30H4Q-2 28 0 18Q-2 8 4 6Z" fill="url(#gMv)" stroke="#555e6d"/><path d="M5 9H40" stroke="#fff" stroke-opacity=".7" stroke-width="2"/></symbol>
+<symbol id="p-driver" viewBox="0 0 24 110"><rect x="10.5" y="40" width="3" height="66" fill="url(#gM)"/><path d="M10.5 106L12 109.5L13.5 106Z" fill="#555e6d"/><rect x="2" y="2" width="20" height="44" rx="8" fill="url(#gRd)" stroke="#5a1511"/><rect x="2" y="30" width="20" height="5" fill="#222" opacity=".4"/><path d="M6 9V27" stroke="#fff" stroke-opacity=".6" stroke-width="2" stroke-linecap="round"/></symbol>
+<symbol id="p-pliers" viewBox="0 0 44 100"><path d="M18 40L12 94M26 40L32 94" stroke="#b33a2b" stroke-width="9" stroke-linecap="round"/><path d="M16 4Q10 22 17 42H27Q34 22 28 4Q22 12 16 4Z" fill="url(#gM)" stroke="#555e6d"/><circle cx="22" cy="40" r="4.5" fill="url(#gD)" stroke="#555e6d"/></symbol>
+<symbol id="p-nut" viewBox="0 0 30 30"><path d="M15 1L27 8V22L15 29L3 22V8Z" fill="url(#gB)" stroke="#6e5420"/><circle cx="15" cy="15" r="7" fill="#2c323c" stroke="#e9d9a0" stroke-width="1.3"/><path d="M15 1L27 8M3 8L15 15" stroke="#fff" stroke-opacity=".4" fill="none"/></symbol>
+<symbol id="p-gear" viewBox="0 0 40 40"><circle cx="20" cy="20" r="16.5" fill="none" stroke="#8c95a3" stroke-width="6" stroke-dasharray="6.2 4.5"/><circle cx="20" cy="20" r="14" fill="url(#gD)" stroke="#6b7482"/><circle cx="20" cy="20" r="5" fill="#2c323c" stroke="#e9edf3" stroke-width="1.2"/><path d="M20 7V13M20 27V33M7 20H13M27 20H33" stroke="#6b7482" stroke-width="1.6"/></symbol>
+<symbol id="p-bulb" viewBox="0 0 44 64"><path d="M14 40Q2 32 2 20Q2 2 22 2Q42 2 42 20Q42 32 30 40V46H14Z" fill="url(#gGl)" fill-opacity=".85" stroke="#7fa6c4"/><path d="M17 38V23L22 27L27 23V38" fill="none" stroke="#e6b94a" stroke-width="1.4"/><path d="M9 14Q11 8 17 6" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-opacity=".9"/><rect x="13" y="45" width="18" height="16" rx="2" fill="url(#gM)" stroke="#555e6d"/><path d="M13 50H31M13 54H31M13 58H31" stroke="#555e6d" stroke-width="1.2"/><rect x="17" y="60" width="10" height="4" rx="2" fill="#3a414d"/></symbol>
+<symbol id="p-plank" viewBox="0 0 220 34"><rect x="2" y="9" width="216" height="23" rx="2" fill="url(#gW2)" stroke="#151210"/><path d="M2 9L14 3H206L218 9Z" fill="#4a423c" stroke="#151210"/><path d="M12 16H208M8 22H212M16 27H200" stroke="#fff" stroke-opacity=".08" stroke-width="1.2"/></symbol>
+<symbol id="p-battery" viewBox="0 0 64 34"><path d="M2 17H12" stroke="#1d1d1d" stroke-width="3.2" stroke-linecap="round"/><path d="M52 17H62" stroke="#d92d2d" stroke-width="3.2" stroke-linecap="round"/><rect x="10" y="3" width="44" height="28" rx="4" fill="url(#gBl)" stroke="#142a66"/><rect x="12" y="5" width="40" height="7" rx="3" fill="#fff" opacity=".2"/><rect x="16" y="13" width="32" height="12" rx="2" fill="#e9eef7"/><text x="32" y="22.4" font-size="7.5" font-weight="700" fill="#1b3a8a" text-anchor="middle" font-family="Arial,sans-serif">LiPo 3.7V</text></symbol>
+<symbol id="p-motor" viewBox="0 0 56 30"><rect x="6" y="2" width="38" height="26" rx="4" fill="url(#gMv)" stroke="#555e6d"/><rect x="0" y="6" width="8" height="18" rx="2" fill="#2e343f"/><rect x="0" y="5" width="5" height="4" fill="#d9a441"/><rect x="0" y="21" width="5" height="4" fill="#d9a441"/><rect x="44" y="7" width="6" height="16" fill="#3a414d"/><rect x="50" y="12.5" width="6" height="5" fill="url(#gMv)" stroke="#555e6d" stroke-width=".6"/></symbol>
+<symbol id="p-led" viewBox="0 0 28 46"><path d="M8 28V43M20 28V43" stroke="#aeb6c3" stroke-width="2.4" stroke-linecap="round"/><path d="M4 28V14Q4 2 14 2Q24 2 24 14V28Z" fill="#e5463a" fill-opacity=".88" stroke="#8a1d16"/><rect x="2.5" y="26" width="23" height="4" rx="1" fill="#c8352b" stroke="#8a1d16"/><path d="M8 20V10Q9 6 13 5" stroke="#fff" stroke-opacity=".8" stroke-width="2.2" fill="none" stroke-linecap="round"/></symbol>
+<symbol id="p-switch" viewBox="0 0 48 28"><rect x="6" y="14" width="36" height="12" rx="3" fill="url(#gK)" stroke="#111"/><path d="M3 14H10M38 14H45" stroke="#aeb6c3" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="14" r="2.4" fill="#d9a441"/><circle cx="36" cy="14" r="2.4" fill="#d9a441"/><path d="M12 14L30 3" stroke="url(#gM)" stroke-width="3.6" stroke-linecap="round"/><circle cx="30" cy="3" r="2.6" fill="#c8352b"/></symbol>
+<symbol id="p-swon" viewBox="0 0 48 28"><rect x="6" y="14" width="36" height="12" rx="3" fill="url(#gK)" stroke="#111"/><path d="M3 14H10M38 14H45" stroke="#aeb6c3" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="14" r="2.4" fill="#d9a441"/><circle cx="36" cy="14" r="2.4" fill="#d9a441"/><path d="M12 14H36" stroke="url(#gMv)" stroke-width="3.6" stroke-linecap="round"/><circle cx="36" cy="14" r="2.6" fill="#3ddc7a"/></symbol>
+<symbol id="p-rod" viewBox="0 0 18 110"><rect x="4" y="2" width="10" height="106" rx="2" fill="url(#gM)" stroke="#555e6d"/><path d="M9 4V106" stroke="#4a5262" stroke-width="10" stroke-dasharray="1 3.2" opacity=".55"/></symbol>
+<symbol id="p-hose" viewBox="0 0 34 100"><rect x="3" y="2" width="28" height="96" rx="6" fill="url(#gM)" stroke="#555e6d"/><path d="M17 4V96" stroke="#4d5666" stroke-width="28" stroke-dasharray="1.6 4.4" opacity=".6"/></symbol>
+<symbol id="p-sheet" viewBox="0 0 44 48"><path d="M4 44L16 4Q22 2 28 8L40 44Q22 50 4 44Z" fill="url(#gF)" stroke="#6b7482"/><path d="M12 40L20 10" stroke="#fff" stroke-opacity=".7" stroke-width="2.4" fill="none"/><circle cx="22" cy="38" r="2.4" fill="#8c95a3"/></symbol>
+<symbol id="p-ball" viewBox="0 0 46 46"><circle cx="23" cy="23" r="21" fill="url(#gBall)" stroke="#173f2c"/><ellipse cx="16" cy="14" rx="8" ry="5" fill="#fff" opacity=".55" transform="rotate(-30 16 14)"/></symbol>
+<symbol id="p-knob" viewBox="0 0 28 28"><circle cx="14" cy="14" r="12.5" fill="url(#gBr)" stroke="#6e5420"/><ellipse cx="10" cy="9" rx="4" ry="2.6" fill="#fff" opacity=".7"/></symbol>
+<symbol id="p-eye" viewBox="0 0 38 38"><circle cx="19" cy="19" r="17.5" fill="url(#gEye)" stroke="#8b929d"/><circle cx="19" cy="20" r="9" fill="url(#gIris)"/><circle cx="19" cy="20" r="4.6" fill="#0d0f14"/><ellipse cx="14.5" cy="12" rx="5" ry="3" fill="#fff" opacity=".9" transform="rotate(-25 14.5 12)"/></symbol>
+<symbol id="p-brush" viewBox="0 0 44 40"><path d="M22 36V2M22 36L12 4M22 36L32 4M22 36L4 10M22 36L40 10M22 36L2 22M22 36L42 22M22 36L8 6M22 36L36 6" stroke="#2a2420" stroke-width="1.6" stroke-linecap="round"/><rect x="14" y="31" width="16" height="8" rx="2" fill="url(#gM)" stroke="#555e6d"/></symbol>
+<symbol id="p-spatula" viewBox="0 0 30 104"><path d="M13 50H17L18 100H12Z" fill="url(#gK)"/><path d="M4 4H26L28 46Q15 54 2 46Z" fill="url(#gF)" stroke="#7b8493"/><path d="M9 12V38M15 12V40M21 12V38" stroke="#3f4654" stroke-width="2.4" stroke-linecap="round"/></symbol>
+<symbol id="p-masher" viewBox="0 0 40 112"><rect x="17" y="30" width="7" height="78" rx="3" fill="url(#gM)" stroke="#6b7482"/><rect x="2" y="2" width="36" height="30" rx="3" fill="url(#gF)" stroke="#7b8493"/><path d="M8 4V30M14 4V30M20 4V30M26 4V30M32 4V30M3 10H37M3 17H37M3 24H37" stroke="#6b7482" stroke-width="1.2"/></symbol>
+<symbol id="p-stick" viewBox="0 0 10 120"><rect x="1" y="1" width="8" height="118" rx="3" fill="url(#gH)" stroke="#4a3520"/></symbol>
+<symbol id="p-woodbox" viewBox="0 0 210 58"><path d="M2 14L14 4H198L208 14V54H2Z" fill="url(#gW3)" stroke="#2a1b10"/><path d="M2 14H208" stroke="#e0b98a" stroke-opacity=".5" stroke-width="2"/><path d="M2 26H208" stroke="#1e130b" stroke-opacity=".5"/><rect x="96" y="30" width="18" height="12" rx="2" fill="url(#gM)" stroke="#555e6d"/><path d="M10 40H80M120 44H198M14 20H90" stroke="#fff" stroke-opacity=".07" stroke-width="1.4"/></symbol>
+<symbol id="p-block" viewBox="0 0 56 52"><rect x="2" y="2" width="52" height="48" rx="2" fill="url(#gH)" stroke="#4a3520"/><path d="M8 2V50M14 2V50M20 2V50M26 2V50M32 2V50M38 2V50M44 2V50M50 2V50" stroke="#4a3520" stroke-opacity=".35" stroke-width="1.4"/></symbol>
+<symbol id="p-disc" viewBox="0 0 200 28"><path d="M3 12H197V20Q100 30 3 20Z" fill="url(#gM)" stroke="#555e6d"/><ellipse cx="100" cy="12" rx="97" ry="10" fill="url(#gD)" stroke="#555e6d"/><ellipse cx="100" cy="12" rx="80" ry="6" fill="#98a1ae" opacity=".45"/></symbol>
+<symbol id="p-spice" viewBox="0 0 58 78"><rect x="2" y="6" width="54" height="68" rx="3" fill="url(#gPk)" stroke="#6b1d2b"/><rect x="2" y="2" width="54" height="9" rx="2" fill="url(#gM)" stroke="#555e6d"/><rect x="7" y="24" width="44" height="28" fill="#2a1519"/><text x="29" y="35" font-size="7.5" font-weight="700" fill="#f4e7cf" text-anchor="middle" font-family="Arial,sans-serif">BAHARAT</text><text x="29" y="46" font-size="9" font-weight="700" fill="#f7d7a0" text-anchor="middle" font-family="Arial,sans-serif">TARÇIN</text></symbol>
+<symbol id="p-bcan" viewBox="0 0 60 86"><path d="M2 8V78Q30 88 58 78V8Z" fill="url(#gBu)"/><path d="M2 22Q30 30 58 22M2 64Q30 72 58 64" fill="none" stroke="#0b2a4a" stroke-opacity=".7" stroke-width="1.6"/><path d="M2 24Q30 32 58 24M2 66Q30 74 58 66" fill="none" stroke="#fff" stroke-opacity=".5"/><ellipse cx="30" cy="8" rx="28" ry="6.5" fill="url(#gD)" stroke="#6b7482"/><ellipse cx="30" cy="8" rx="21" ry="4" fill="none" stroke="#8c95a3"/></symbol>
+<symbol id="p-cube" viewBox="0 0 56 70"><path d="M8 8L48 8L54 22V54L44 66H12L2 54V22Z" fill="url(#gCu)" stroke="#5a3322"/><path d="M8 8L2 22M48 8L54 22M14 20L42 20M14 56L42 56" stroke="#2a140d" stroke-opacity=".4" fill="none"/><path d="M10 12L14 20V56" stroke="#fff" stroke-opacity=".5" stroke-width="2.2" fill="none" stroke-linecap="round"/></symbol>
+<symbol id="p-wheel" viewBox="0 0 36 36"><circle cx="18" cy="18" r="17" fill="url(#gR)" stroke="#5a1511"/><circle cx="18" cy="18" r="9" fill="url(#gD)" stroke="#555e6d"/><circle cx="18" cy="18" r="3" fill="#2c323c"/><path d="M18 9V27M9 18H27" stroke="#6b7482" stroke-width="1"/></symbol>
+<symbol id="p-dial" viewBox="0 0 44 44"><circle cx="22" cy="22" r="21" fill="url(#gK)" stroke="#0d0f14"/><circle cx="22" cy="22" r="17" fill="none" stroke="#c9cfda" stroke-width="1.4" stroke-dasharray="1.4 3"/><circle cx="22" cy="22" r="8" fill="url(#gD)" stroke="#555e6d"/><path d="M22 22V6" stroke="#e5463a" stroke-width="3" stroke-linecap="round"/></symbol>
+<symbol id="p-hook" viewBox="0 0 44 92"><path d="M6 4C6 40 8 60 20 80C28 92 42 86 38 74" fill="none" stroke="#a82a20" stroke-width="4.6" stroke-linecap="round"/><path d="M6 4C6 40 8 60 20 80C28 92 42 86 38 74" fill="none" stroke="#ff8f80" stroke-width="1.2" stroke-linecap="round" opacity=".7"/></symbol>
+<symbol id="p-domino" viewBox="0 0 34 20"><rect x="1" y="1" width="32" height="18" rx="3" fill="url(#gK)" stroke="#000"/><path d="M17 3V17" stroke="#c9cfda" stroke-width="1"/><g fill="#eef1f5"><circle cx="8" cy="6" r="1.7"/><circle cx="8" cy="14" r="1.7"/><circle cx="26" cy="6" r="1.7"/><circle cx="26" cy="14" r="1.7"/><circle cx="26" cy="10" r="1.7"/></g></symbol>
+<symbol id="p-tire" viewBox="0 0 44 44"><circle cx="22" cy="22" r="21" fill="url(#gK)" stroke="#06070a"/><circle cx="22" cy="22" r="17" fill="none" stroke="#0a0c10" stroke-width="3" stroke-dasharray="2.6 2.6"/><circle cx="22" cy="22" r="11" fill="url(#gD)" stroke="#555e6d"/><circle cx="22" cy="22" r="3.6" fill="#2c323c"/><path d="M22 12V32M12 22H32M15 15L29 29M29 15L15 29" stroke="#7c8594" stroke-width="1.2"/></symbol>
+<symbol id="p-frame" viewBox="0 0 190 18"><rect x="2" y="2" width="186" height="14" rx="3" fill="url(#gMv)" stroke="#555e6d"/><g fill="#2c323c"><circle cx="20" cy="9" r="3"/><circle cx="50" cy="9" r="3"/><circle cx="80" cy="9" r="3"/><circle cx="110" cy="9" r="3"/><circle cx="140" cy="9" r="3"/><circle cx="170" cy="9" r="3"/></g><path d="M6 4H184" stroke="#fff" stroke-opacity=".6" stroke-width="1.4"/></symbol>
+<symbol id="p-shell" viewBox="0 0 170 58"><path d="M4 44Q4 36 14 34L46 30Q58 10 84 8H108Q126 10 138 28L158 32Q168 34 168 44V50H4Z" fill="url(#gCar)" stroke="#5a1511"/><path d="M54 30Q62 14 84 12H106Q120 14 130 28Z" fill="url(#gGlass)" stroke="#2a3a4a"/><path d="M92 12V28" stroke="#2a3a4a" stroke-width="2"/><path d="M8 40H162" stroke="#fff" stroke-opacity=".35" stroke-width="1.5"/><ellipse cx="38" cy="48" rx="19" ry="10" fill="#14181f"/><ellipse cx="132" cy="48" rx="19" ry="10" fill="#14181f"/><rect x="152" y="35" width="12" height="6" rx="2" fill="#ffe9a8" stroke="#8a6d1a"/><rect x="5" y="35" width="8" height="6" rx="2" fill="#e5463a" stroke="#6e1511"/></symbol>
+<symbol id="p-cab" viewBox="0 0 70 70"><path d="M2 66V22Q2 14 10 12L40 8Q52 8 56 20L66 30V66Z" fill="url(#gBu)" stroke="#123a66"/><path d="M10 14L38 11Q48 11 52 22H10Z" fill="url(#gGlass)" stroke="#1a2a3a"/><rect x="12" y="30" width="30" height="34" rx="2" fill="none" stroke="#0b2a4a" stroke-opacity=".6"/><rect x="36" y="42" width="8" height="3" rx="1.5" fill="#cfd6e0"/><rect x="58" y="48" width="8" height="7" rx="2" fill="#ffe9a8" stroke="#8a6d1a"/></symbol>
+<symbol id="p-box" viewBox="0 0 120 64"><rect x="2" y="2" width="116" height="60" rx="3" fill="url(#gBox)" stroke="#2a4a1a"/><path d="M12 4V60M26 4V60M40 4V60M54 4V60M68 4V60M82 4V60M96 4V60M110 4V60" stroke="#1f3a12" stroke-opacity=".45" stroke-width="2"/><rect x="2" y="2" width="116" height="6" fill="#fff" opacity=".18"/></symbol>
+<symbol id="p-window" viewBox="0 0 40 28"><path d="M2 26L8 4Q9 2 12 2H34Q38 2 38 6V26Z" fill="url(#gGlass)" stroke="#3a4a5a" stroke-width="2"/><path d="M8 22L14 6" stroke="#fff" stroke-opacity=".7" stroke-width="3" stroke-linecap="round"/></symbol>
+<symbol id="p-door" viewBox="0 0 52 36"><path d="M2 34V12Q2 6 8 6H44Q50 6 50 12V34Z" fill="url(#gF)" stroke="#6b7482"/><path d="M8 10H44V18H8Z" fill="url(#gGlass)" stroke="#3a4a5a"/><rect x="34" y="24" width="10" height="3" rx="1.5" fill="#2c323c"/><path d="M6 31H46" stroke="#fff" stroke-opacity=".6" stroke-width="1.5"/></symbol>
+<symbol id="p-fender" viewBox="0 0 56 26"><path d="M2 24Q4 4 28 3Q52 4 54 24H46Q44 12 28 11Q12 12 10 24Z" fill="url(#gMv)" stroke="#555e6d"/><path d="M12 14Q20 8 28 8" stroke="#fff" stroke-opacity=".7" stroke-width="2" fill="none" stroke-linecap="round"/></symbol>
+<symbol id="p-bumper" viewBox="0 0 74 14"><rect x="2" y="2" width="70" height="10" rx="5" fill="url(#gMv)" stroke="#555e6d"/><path d="M8 5H66" stroke="#fff" stroke-opacity=".9" stroke-width="1.6" stroke-linecap="round"/></symbol>
+<symbol id="p-grille" viewBox="0 0 36 30"><rect x="2" y="2" width="32" height="26" rx="4" fill="#20252e" stroke="#9aa3b2" stroke-width="2"/><path d="M6 8H30M6 14H30M6 20H30" stroke="url(#gM)" stroke-width="3" stroke-linecap="round"/></symbol>
+<symbol id="p-spoiler" viewBox="0 0 60 24"><path d="M10 8V22M50 8V22" stroke="#2c323c" stroke-width="4"/><path d="M2 4Q30 -1 58 4V10Q30 6 2 10Z" fill="url(#gCar)" stroke="#5a1511"/></symbol>
+<symbol id="p-seat" viewBox="0 0 30 36"><path d="M5 3Q2 3 3 8L6 26H27V32H4V30L1 8Q0 1 8 1Z" fill="url(#gK)" stroke="#0a0c10"/><path d="M8 5L10 22" stroke="#fff" stroke-opacity=".3" stroke-width="2"/></symbol>
+<symbol id="p-steer" viewBox="0 0 38 38"><circle cx="19" cy="19" r="16" fill="none" stroke="url(#gK)" stroke-width="5"/><circle cx="19" cy="19" r="5" fill="url(#gM)" stroke="#555e6d"/><path d="M19 14V3M14 21L4 26M24 21L34 26" stroke="#3a414d" stroke-width="3.5" stroke-linecap="round"/></symbol>
+<symbol id="p-engine" viewBox="0 0 64 48"><rect x="4" y="14" width="56" height="30" rx="4" fill="url(#gMv)" stroke="#555e6d"/><g fill="url(#gM)" stroke="#555e6d"><rect x="10" y="4" width="10" height="14" rx="2"/><rect x="24" y="4" width="10" height="14" rx="2"/><rect x="38" y="4" width="10" height="14" rx="2"/></g><path d="M52 20H62" stroke="#a82a20" stroke-width="4" stroke-linecap="round"/><circle cx="46" cy="32" r="8" fill="url(#gD)" stroke="#555e6d"/><circle cx="46" cy="32" r="2.6" fill="#2c323c"/><path d="M8 20H40M8 26H34" stroke="#fff" stroke-opacity=".5" stroke-width="1.2"/></symbol>
+<symbol id="p-pipe" viewBox="0 0 64 16"><path d="M10 4H60V12H10Z" fill="url(#gMv)" stroke="#555e6d"/><path d="M2 2H12L10 14H2Z" fill="url(#gM)" stroke="#555e6d"/><ellipse cx="3" cy="8" rx="2" ry="6" fill="#20252e"/><path d="M14 6H56" stroke="#fff" stroke-opacity=".7" stroke-width="1.4"/></symbol>
+<symbol id="p-lamp" viewBox="0 0 26 26"><circle cx="13" cy="13" r="12" fill="url(#gD)" stroke="#555e6d"/><circle cx="13" cy="13" r="8" fill="url(#gLamp)" stroke="#8a6d1a"/><circle cx="10" cy="10" r="2.6" fill="#fff" opacity=".9"/></symbol>
+</defs></svg>
+
+<div class="app">
+  <header>
+    <div class="btns">
+      <button id="bMode">Devre</button>
+      <button class="go" id="bTest">Test Et</button>
+      <button id="bDemo">Örnek</button>
+      <button id="bSave">Kaydet</button>
+      <button id="bLoad">Yükle</button>
+      <button id="bClear">Temizle</button>
+    </div>
+  </header>
+  <div class="stagewrap">
+    <svg id="stage" viewBox="0 0 400 540" role="img" aria-label="Çalışma masası">
+      <rect id="bg" width="400" height="486" fill="url(#gBg)"/>
+      <rect id="fl" y="486" width="400" height="54" fill="url(#gW)"/>
+      <rect id="fl2" y="486" width="400" height="2" fill="#fff" opacity=".35"/>
+      <g id="items"></g>
+      <g id="circ" style="display:none"></g>
+    </svg>
+    <div id="status" role="status"></div>
+    <button id="bSnd" class="snd" title="Sesi aç ya da kapat" aria-label="Ses">🔊</button>
+    <div class="tools" id="tools">
+      <button data-a="rotL" title="Sola çevir">Sola</button><button data-a="rotR" title="Sağa çevir">Sağa</button>
+      <button data-a="big">Büyüt</button><button data-a="small">Küçült</button>
+      <button data-a="copy" title="Kopyala">Kopya</button><button data-a="front" title="Öne al">Öne</button><button data-a="del">Sil</button>
+      <button class="cm" data-ca="drive" title="Motorun hangi bölümü oynatacağını değiştir">Bağla</button><button class="cm" data-ca="del">Sil</button><button class="cm" data-ca="wires" title="Tüm kabloları sil">Kablo sil</button>
+    </div>
+  </div>
+  <div class="tabs" id="tabs"></div>
+  <div class="inv" id="inv"></div>
+</div>
+<div class="log" id="logbox"><button class="close" id="bClose">Kapat</button><div id="log"></div></div>
+
+<script>
+"use strict";
+const $=s=>document.querySelector(s), $$=s=>document.querySelectorAll(s);
+
+/* ========== 1) VERİ MODELİ ========== */
+// w,h: boyut (px), m: ağırlık, v: değer (₺), e: elektronik mi
+// Masadaki her parça: {id, t:tür, x, y, r:derece, s:ölçek}. Zemin çizgisi y=FLOOR.
+let VW=400, FLOOR=486; // görünür dünya genişliği ve zemin çizgisi (ekrana göre fit() ayarlar)
+const KEY="hurda-heykel.v4";
+const PARTS={
+  // Gövde
+  can:{g:"Gövde",n:"Konserve",w:70,h:92,m:3,v:6},
+  bcan:{g:"Gövde",n:"Boya kutusu",w:60,h:86,m:3,v:6},
+  soda:{g:"Gövde",n:"Kola kutusu",w:56,h:88,m:2,v:5},
+  tuna:{g:"Gövde",n:"Ton kutusu",w:76,h:40,m:2,v:4},
+  spice:{g:"Gövde",n:"Baharat",w:58,h:78,m:2.5,v:6},
+  bottle:{g:"Gövde",n:"Cam şişe",w:40,h:120,m:3.5,v:9},
+  cube:{g:"Gövde",n:"Bakır blok",w:56,h:70,m:3.5,v:8},
+  ball:{g:"Gövde",n:"Cam küre",w:46,h:46,m:2.5,v:7},
+  frame:{g:"Araç",n:"Şase",w:190,h:18,m:2,v:5},
+  // Taban
+  pan:{g:"Taban",n:"Tava",w:190,h:56,m:4,v:8},
+  plank:{g:"Taban",n:"Kalas",w:220,h:34,m:5,v:7},
+  disc:{g:"Taban",n:"Sac plaka",w:200,h:28,m:4,v:6},
+  woodbox:{g:"Taban",n:"Ahşap kutu",w:210,h:58,m:5,v:9},
+  tin:{g:"Taban",n:"Kalıp",w:70,h:32,m:1.5,v:4},
+  // Kafa
+  bowl:{g:"Kafa",n:"Kevgir",w:70,h:50,m:2,v:5},
+  lid:{g:"Kafa",n:"Tencere",w:80,h:44,m:2,v:5},
+  bulb:{g:"Kafa",n:"Ampul",w:44,h:64,m:.8,v:6},
+  funnel:{g:"Kafa",n:"Huni",w:56,h:62,m:1,v:3},
+  block:{g:"Kafa",n:"Ahşap blok",w:56,h:52,m:1.5,v:4},
+  // Mutfak aletleri
+  spoon:{g:"Mutfak",n:"Kaşık",w:26,h:110,m:1,v:3},
+  fork:{g:"Mutfak",n:"Çatal",w:26,h:110,m:1,v:3},
+  knife:{g:"Mutfak",n:"Bıçak",w:24,h:120,m:1.2,v:4},
+  ladle:{g:"Mutfak",n:"Kepçe",w:34,h:110,m:1.3,v:4},
+  whisk:{g:"Mutfak",n:"Çırpıcı",w:30,h:110,m:.8,v:4},
+  spatula:{g:"Mutfak",n:"Spatula",w:30,h:104,m:1,v:4},
+  masher:{g:"Mutfak",n:"Et tokmağı",w:40,h:112,m:2,v:5},
+  // El aletleri ve çubuklar
+  wrench:{g:"Alet",n:"Anahtar",w:36,h:110,m:2,v:6},
+  hammer:{g:"Alet",n:"Çekiç",w:56,h:110,m:2.5,v:6},
+  driver:{g:"Alet",n:"Tornavida",w:24,h:110,m:1,v:4},
+  pliers:{g:"Alet",n:"Pense",w:44,h:100,m:1.5,v:5},
+  stick:{g:"Alet",n:"Çubuk",w:10,h:120,m:.6,v:2},
+  rod:{g:"Alet",n:"Dişli çubuk",w:18,h:110,m:1,v:3},
+  hose:{g:"Alet",n:"Hortum",w:34,h:100,m:1,v:4},
+  hook:{g:"Alet",n:"Kuyruk teli",w:44,h:92,m:.5,v:3},
+  chain:{g:"Alet",n:"Zincir",w:20,h:84,m:1,v:4},
+  // Bağlantı parçaları
+  bolt:{g:"Detay",n:"Cıvata",w:64,h:18,m:.6,v:2},
+  nut:{g:"Detay",n:"Somun",w:30,h:30,m:.4,v:1},
+  washer:{g:"Detay",n:"Rondela",w:30,h:30,m:.3,v:1},
+  cap:{g:"Detay",n:"Kapak",w:30,h:30,m:.3,v:1},
+  spring:{g:"Detay",n:"Yay",w:26,h:40,m:.3,v:2},
+  tab:{g:"Detay",n:"Halka",w:28,h:38,m:.2,v:2},
+  knob:{g:"Detay",n:"Pirinç top",w:28,h:28,m:.4,v:2},
+  domino:{g:"Detay",n:"Domino",w:34,h:20,m:.5,v:2},
+  // Süs ve dönen parçalar
+  eye:{g:"Süs",n:"Oyuncak göz",w:38,h:38,m:.3,v:3},
+  brush:{g:"Süs",n:"Tel fırça",w:44,h:40,m:.2,v:2},
+  sheet:{g:"Süs",n:"Sac kulak",w:44,h:48,m:.5,v:2},
+  gear:{g:"Süs",n:"Dişli",w:40,h:40,m:.6,v:3},
+  wheel:{g:"Araç",n:"Tekerlek",w:36,h:36,m:.6,v:3},
+  dial:{g:"Süs",n:"Kadran",w:44,h:44,m:.5,v:3},
+  tire:{g:"Araç",n:"Lastik",w:44,h:44,m:.8,v:4},
+  engine:{g:"Araç",n:"Motor bloğu",w:64,h:48,m:3,v:9},
+  pipe:{g:"Araç",n:"Egzoz",w:64,h:16,m:.8,v:3},
+  steer:{g:"Araç",n:"Direksiyon",w:38,h:38,m:.5,v:3},
+  seat:{g:"Araç",n:"Koltuk",w:30,h:36,m:1,v:3},
+  lamp:{g:"Araç",n:"Far",w:26,h:26,m:.4,v:3},
+  shell:{g:"Kasa",n:"Spor kaporta",w:170,h:58,m:5,v:12},
+  cab:{g:"Kasa",n:"Kamyon kabini",w:70,h:70,m:4,v:9},
+  box:{g:"Kasa",n:"Kasa",w:120,h:64,m:4,v:7},
+  door:{g:"Kasa",n:"Kapı",w:52,h:36,m:1.5,v:4},
+  window:{g:"Kasa",n:"Cam",w:40,h:28,m:.6,v:3},
+  fender:{g:"Kasa",n:"Çamurluk",w:56,h:26,m:1,v:3},
+  bumper:{g:"Kasa",n:"Tampon",w:74,h:14,m:1,v:3},
+  grille:{g:"Kasa",n:"Izgara",w:36,h:30,m:.8,v:3},
+  spoiler:{g:"Kasa",n:"Spoyler",w:60,h:24,m:.8,v:3}
+};
+const known=k=>Object.hasOwn(PARTS,k);
+let items=[], nid=1, selId=null, arm=null;
+const E=i=>PARTS[i.t].e, byT=t=>items.filter(i=>i.t===t);
+
+/* ========== 2) GEOMETRİ ========== */
+function hext(i){ // döndürülmüş parçanın yarı genişlik/yüksekliği
+  const p=PARTS[i.t],a=i.r*Math.PI/180,c=Math.abs(Math.cos(a)),s=Math.abs(Math.sin(a)),w=p.w*i.s,h=p.h*i.s;
+  return {hx:(w*c+h*s)/2,hy:(w*s+h*c)/2};
+}
+const touch=(a,b,t=6)=>{const A=hext(a),B=hext(b);return Math.abs(a.x-b.x)<=A.hx+B.hx+t&&Math.abs(a.y-b.y)<=A.hy+B.hy+t};
+const nbrs=i=>items.filter(o=>o!==i&&touch(i,o));
+function settle(i){ // tuvalin içinde kal, zemine yakınsa zemine otur
+  const {hx,hy}=hext(i);
+  i.x=Math.round(Math.min(VW-hx,Math.max(hx,i.x))); i.y=Math.round(Math.max(hy,i.y));
+  if(i.y+hy>FLOOR-14)i.y=Math.round(FLOOR-hy);
+}
+
+/* ========== 3) ELEKTRİK (sonra) ========== */
+// Devre sistemi kurulunca bu değer pil, kablo ve motor bağlantısından gelecek;
+// false iken robot hareket etmez. Şimdilik mekanik önizleme için hep açık.
+let power=true;
+
+/* ========== 4) SANAT PUANI ========== */
+const BODY=["can","bcan","soda","tuna","spice","bottle","cube","ball","shell","cab","box"], BASE=["pan","plank","disc","woodbox"];      // gövde olabilenler, taban olanlar
+const HEAD=[...BODY,"bowl","lid","bulb","block"], HEADS=()=>items.filter(i=>HEAD.includes(i.t));
+const LIMB=["fork","spoon","chain","knife","ladle","whisk","wrench","hammer","driver","pliers","spatula","masher","stick","rod","hose","hook","domino"];
+const TOOLS=["wrench","hammer","driver","knife","ladle","whisk","pliers"];
+const WHEELS=["wheel","tire"]; // dönerek aracı sürer
+const BODYS=()=>items.filter(i=>BODY.includes(i.t)), BASEPARTS=()=>items.filter(i=>BASE.includes(i.t));
+const isLimb=o=>LIMB.includes(o.t)||(o.t==="cap"&&nbrs(o).some(n=>n.t==="cap")); // kapak dizisi de uzuv olur
+function capChain(){ // birbirine değen en büyük kapak grubu
+  const caps=byT("cap"), seen=new Set(); let best=0;
+  for(const c of caps){
+    if(seen.has(c))continue;
+    let n=0; const q=[c]; seen.add(c);
+    while(q.length){const a=q.shift();n++;for(const b of caps)if(!seen.has(b)&&touch(a,b)){seen.add(b);q.push(b)}}
+    best=Math.max(best,n);
+  }
+  return best;
+}
+const MOTIFS=[
+  ["Balerin etek",()=>byT("tin").some(t=>BODYS().some(c=>t.y>c.y&&touch(t,c)))],
+  ["Kaşık ayak",()=>byT("spoon").some(s=>s.y+hext(s).hy>=FLOOR-8||nbrs(s).some(o=>BASE.includes(o.t)))],
+  ["Çatal kol",()=>byT("fork").some(f=>BODYS().some(c=>Math.abs(f.x-c.x)>30&&touch(f,c)))],
+  ["Kapak eklemli uzuv",()=>capChain()>=3],
+  ["Cıvata gözler",()=>HEADS().some(h=>{const e=nbrs(h).filter(o=>o.t==="bolt"||o.t==="washer");return e.some(a=>a.x<h.x)&&e.some(a=>a.x>h.x)})],
+  ["Yaylı boyun",()=>byT("spring").some(s=>{const n=nbrs(s);return n.some(o=>HEAD.includes(o.t)&&o.y<s.y)&&n.some(o=>BODY.includes(o.t)&&o.y>s.y)})],
+  ["Alet kol",()=>items.filter(f=>TOOLS.includes(f.t)).some(f=>BODYS().some(c=>Math.abs(f.x-c.x)>30&&touch(f,c)))],
+  ["Şapkalı kafa",()=>byT("funnel").some(f=>HEADS().some(h=>f.y<h.y&&touch(f,h)))],
+  ["Dişli göğüs",()=>byT("gear").some(g=>BODYS().some(b=>touch(g,b)&&Math.abs(g.x-b.x)<hext(b).hx*.6))],
+  ["Cam gövde",()=>byT("bottle").some(b=>nbrs(b).length>=3)],
+  ["Işıklı kafa",()=>byT("bulb").some(b=>BODYS().some(c=>b.y<c.y&&touch(b,c)))],
+  ["Dört tekerlek",()=>items.filter(o=>WHEELS.includes(o.t)).length>=4],
+  ["Far",()=>byT("bulb").some(b=>items.some(c=>(BODY.includes(c.t)||c.t==="frame")&&touch(b,c)&&b.y>c.y-20))],
+  ["Egzoz dumanı",()=>byT("pipe").length>0&&byT("engine").length>0],
+  ["Camlı kabin",()=>byT("window").some(w=>items.some(c=>["shell","cab"].includes(c.t)&&touch(w,c)))],
+  ["Tam donanım",()=>["shell","cab","box","window","door","fender","bumper","grille","spoiler","seat","steer","engine","pipe","lamp"].filter(k=>byT(k).length).length>=7]
+];
+function artScore(out){
+  const art=items.filter(i=>!E(i)); // elektronik sanat sayılmaz
+  if(!art.length){out.push(["warn","🎨 Sanat: henüz hurda parça yok."]);return 0}
+  let s=0;
+  const kinds=new Set(art.map(i=>i.t)).size, vp=Math.min(6,kinds)*5;
+  s+=vp; out.push(["ok","🎨 Çeşitlilik: "+kinds+" farklı hurda türü (+"+vp+")"]);
+  const top=Math.min(...art.map(i=>i.y-hext(i).hy));
+  if(items.filter(o=>WHEELS.includes(o.t)).length>=2&&!items.some(o=>["spoon","rod","domino"].includes(o.t))){s+=10;out.push(["ok","🎨 Araç: tekerlekler ve gövde bir arada (+10)"])}
+  else if(art.some(i=>HEAD.includes(i.t)&&i.y<top+(Math.max(...art.map(j=>j.y+hext(j).hy))-top)*.4)){s+=10;out.push(["ok","🎨 Kafa: en üstte kevgir ya da konserve var (+10)"])}
+  else out.push(["warn","🎨 Kafa yok: en üste kevgir ya da konserve koy."]);
+  const symAt=ax=>art.filter(i=>art.some(o=>o.t===i.t&&Math.abs(o.x-(2*ax-i.x))<22&&Math.abs(o.y-i.y)<26)).length/art.length;
+  const sym=Math.max(...art.map(i=>symAt(i.x))); // en iyi dikey simetri ekseni
+  const sp=Math.round(20*sym); s+=sp;
+  out.push(["ok","🎨 Simetri %"+Math.round(100*sym)+" (+"+sp+")"]);
+  const found=MOTIFS.filter(([,f])=>f()).map(m=>m[0]);
+  found.forEach(n=>{s+=7;out.push(["ok","✨ Keşfedildi: "+n+" (+7)"])});
+  if(!found.length)out.push(["mu","✨ Gizli kombinasyonlar var: parçaları bir sanatçı gibi eşleştir."]);
+  return Math.min(100,s);
+}
+
+/* ========== 5) HAREKET MANTIĞI (rig) ========== */
+// Parçalara rolü yapıdan atanır: gövde (konserve) merkez alınır, ona değen dallar
+// konumlarına göre kafa/boyun, kol veya bacak olur. Her dal kendi eklem noktasından oynar.
+function buildRig0(){
+  const plan=new Map(), R={head:[],neck:[],eye:[],mouth:[],ear:[],arm:[],leg:[],skirt:[],hat:[],gear:[],tail:[],wheel:[],engine:[],steer:[]}, cans=BODYS();
+  if(!cans.length)return {plan,R,body:null};
+  const heads=HEADS().sort((a,b)=>a.y-b.y);
+  let head=heads[0], pool=cans.filter(c=>c!==head);
+  if(!pool.length){pool=cans.slice();head=heads.find(h=>!BODY.includes(h.t)&&h.y<pool[0].y)||null}
+  const body=pool.reduce((a,b)=>nbrs(b).length>nbrs(a).length?b:a);
+  if(head&&head.y>=body.y)head=null;
+  // gövde: üst üste konserveler ve etek (kek kalıbı) gövdeye katılır
+  const torso=new Set([body]);
+  for(let g=true;g;){g=false;for(const o of items)
+    if(!torso.has(o)&&o!==head&&(BODY.includes(o.t)||o.t==="tin")&&[...torso].some(x=>touch(o,x)&&Math.abs(o.x-x.x)<hext(x).hx*.6)){torso.add(o);g=true}}
+  const seen=new Set([...torso,...BASEPARTS()]); // tava taban, hareket etmez
+  const branch=r=>{const g=[r],q=[r];seen.add(r);while(q.length){const a=q.shift();for(const b of nbrs(a))if(!seen.has(b)&&!RS.has(b)){seen.add(b);g.push(b);q.push(b)}}return g};
+  const onTorso=o=>[...torso].some(x=>touch(o,x));
+  const RS=new Set(items.filter(o=>!seen.has(o)&&onTorso(o)&&isLimb(o))); // gövdeye değen uzuv kökleri birbirinin dalına karışmasın
+  const LG={boing:"head",blink:"eye",talk:"mouth",wig:"ear",flutter:"skirt",spin:"gear",glow:"light"}; // yerel hareket -> bölüm
+  const set=(o,v)=>plan.set(o.id,{...(plan.get(o.id)||{}),bob:true,...v,...(v.loc?{locG:LG[v.loc]}:{})});
+  const rg=(ox,oy,a,d,dl)=>({ox:Math.round(ox),oy:Math.round(oy),a,d,dl});
+  items.forEach(o=>{if(!BASE.includes(o.t))set(o,{})}); // gövde ve dallar hafifçe zıplar
+  torso.forEach(x=>{if(x.t==="tin"){R.skirt.push(x);set(x,{loc:"flutter"})}});
+
+  // kafa dalı: boyun yayı varsa onun ucundan, yoksa kafanın altından yalpalar
+  if(head){
+    const neck=items.find(o=>o.t==="spring"&&!seen.has(o)&&o.y>head.y&&touch(o,head)&&onTorso(o));
+    let g,ox,oy;
+    if(neck){g=branch(neck).filter(o=>o!==neck);set(neck,{loc:"boing"});R.neck.push(neck);ox=neck.x;oy=neck.y-hext(neck).hy}
+    else{g=branch(head);ox=head.x;oy=head.y+hext(head).hy}
+    R.head.push(head);
+    const H=hext(head);
+    g.forEach(o=>{
+      set(o,{rig:rg(ox,oy,6,1.1,0),rigG:"head"});
+      if(o===head||!touch(o,head))return;
+      const dy=(o.y-head.y)/H.hy, dx=(o.x-head.x)/H.hx;
+      if(o.t==="tab"||(dy>.15&&Math.abs(dx)<.5&&["bolt","cap","washer","nut"].includes(o.t))){R.mouth.push(o);set(o,{loc:"talk"})}
+      else if(["washer","cap","nut","eye"].includes(o.t)){R.eye.push(o);set(o,{loc:"blink"})}
+      else if(o.t==="gear"||(o.t==="knob"&&Math.abs(dy)<.6)){R.eye.push(o);set(o,{loc:o.t==="gear"?"spin":"blink"})} // dişli ya da pirinç top göz olur
+      else if(["bolt","brush","sheet","spring"].includes(o.t)||LIMB.includes(o.t)){R.ear.push(o);set(o,{loc:"wig"})}
+      else if(o.t==="funnel"||o.t==="lid"){R.hat.push(o)}
+    });
+  }
+
+  // kol ve bacaklar: gövdeye değen dallar. Alt kısımdaysa bacak, yandaysa kol.
+  const tt=[...torso], top=Math.min(...tt.map(x=>x.y-hext(x).hy)), bot=Math.max(...tt.map(x=>x.y+hext(x).hy)), tx=body.x;
+  const thr=(top+bot)/2+.25*(bot-top), B=hext(body);
+  [...RS].sort((a,b)=>a.y-b.y).forEach(r=>{
+    if(seen.has(r))return;
+    const g=branch(r), leg=r.y>thr||(Math.abs(r.x-tx)<B.hx*.4&&r.y>body.y), side=r.x<tx?-1:1, A=hext(r);
+    const an=leg?[tx,bot]:[tx,body.y-B.hy*.4]; // eklem: gövdeye en yakın nokta
+    const ox=Math.min(r.x+A.hx,Math.max(r.x-A.hx,an[0])), oy=Math.min(r.y+A.hy,Math.max(r.y-A.hy,an[1]));
+    const dl=((side<0)!==leg)?0:-.45; // yürüyüş: sol kol ile sağ bacak aynı fazda
+    const tail=r.t==="hook"; // kuyruk teli ayrı bölüm: kuyruk
+    g.forEach(o=>set(o,{rig:rg(ox,oy,tail?25:leg?20:30,.45,dl),rigG:tail?"tail":leg?"leg":"arm"}));
+    (tail?R.tail:leg?R.leg:R.arm).push(r);
+  });
+  items.filter(o=>["gear","dial"].includes(o.t)).forEach(o=>{R.gear.push(o);set(o,{loc:"spin"})}); // dişli yerinde döner
+  if(head&&head.t==="bulb")set(head,{loc:"glow"});                                // ampul kafa yanıp söner
+  return {plan,R,body};
+}
+
+function buildRig(){ // robot rolleri + araç rolleri (tekerlek, far)
+  const rig=buildRig0(), add=(o,v)=>rig.plan.set(o.id,{...(rig.plan.get(o.id)||{}),...v});
+  items.filter(o=>WHEELS.includes(o.t)).forEach(o=>{rig.R.wheel.push(o);add(o,{loc:"roll",locG:"wheel"})});
+  items.filter(o=>o.t==="bulb"||o.t==="lamp").forEach(o=>add(o,{loc:"glow",locG:"light"})); // ampul ve far: LED ile yanar
+  items.filter(o=>o.t==="engine").forEach(o=>{rig.R.engine.push(o);add(o,{loc:"shake",locG:"engine"})}); // motor bloğu titrer
+  items.filter(o=>o.t==="pipe").forEach(o=>add(o,{locG:"engine",smoke:true}));                         // egzoz duman verir
+  items.filter(o=>o.t==="steer").forEach(o=>{rig.R.steer.push(o);add(o,{loc:"turn",locG:"steer"})});   // direksiyon döner
+  return rig;
+}
+
+/* ========== 6) TEST ========== */
+function testSystem(){
+  if(!items.length)return say("Masa boş: envanterden bir parça seç ve masaya bırak.");
+  const out=[]; let fatal=false;
+  const ok=m=>out.push(["ok","✅ "+m]), wn=m=>out.push(["warn","⚠️ "+m]);
+  const bd=m=>{out.push(["bad","❌ "+m]);fatal=true};
+  const art=artScore(out);
+
+  // a) Bütünlük: parçalar birbirine değerek tek gövde oluşturuyor mu?
+  const seen=new Set([items[0]]), q=[items[0]];
+  while(q.length)for(const o of nbrs(q.shift()))if(!seen.has(o)){seen.add(o);q.push(o)}
+  const lost=items.length-seen.size;
+  if(lost)bd(lost+" parça gövdeye tutunmuyor. Kopuk parçaları diğerlerine değecek şekilde yaklaştır.");
+  else ok("Tüm parçalar birbirine değiyor, gövde tek parça.");
+
+  // b) Zemin ve denge: ağırlık merkezi, zemine değen parçaların aralığında olmalı
+  const feet=items.filter(i=>i.y+hext(i).hy>=FLOOR-6);
+  let stab=0;
+  if(!feet.length)bd("Robot havada duruyor: en az bir parça zemine değmeli. Tava ya da ayak ekle.");
+  else{
+    let M=0,X=0; items.forEach(i=>{const m=PARTS[i.t].m*i.s;M+=m;X+=m*i.x});
+    const lo=Math.min(...feet.map(i=>i.x-hext(i).hx)), hi=Math.max(...feet.map(i=>i.x+hext(i).hx)), com=X/M;
+    const mg=Math.min(com-lo,hi-com);
+    stab=Math.max(0,Math.round(100*mg/((hi-lo)/2)));
+    if(mg<0)bd("Robot devrilir: ağırlık merkezi ayakların dışında. Ağır parçaları ayakların üstüne topla ya da tabanı tava ile genişlet.");
+    else if(stab<30){ok("Ayakta duruyor ama denge sınırda (%"+stab+").");wn("Tabanı genişlet: yan yana ayak ya da tava ekle.")}
+    else ok("Ağırlık merkezi ayakların üstünde, denge %"+stab+".");
+  }
+
+  // c) Hareket planı: hangi parça nerede, nasıl oynayacak
+  const rig=buildRig(), R=rig.R, nm=k=>[...new Set(R[k].map(o=>PARTS[o.t].n))].join(" ve ");
+  const car=R.wheel.length>=2&&!R.leg.length; // araç: tekerlekli, bacaksız
+  if(car){
+    ok("Araç: "+R.wheel.length+" tekerlek ("+nm("wheel")+"). Motor tekerleklere bağlanınca dönüp sürer.");
+    if(R.engine.length)ok("Motor bloğu: çalışınca titrer"+(items.some(o=>o.t==="pipe")?", egzozdan duman çıkar":"")+".");
+    if(R.steer.length)ok("Direksiyon: bağlanınca sağa sola döner.");
+    const lamps=items.filter(o=>o.t==="bulb"||o.t==="lamp").length;
+    if(lamps)ok("Far: "+lamps+", LED ile yanar.");
+  }
+  else if(!rig.body)wn("Gövde yok: bir konserve ekle. Kafa, kol ve bacaklar gövdeye göre bulunur.");
+  else{
+    if(R.head.length)ok("Kafa ("+nm("head")+"): "+(R.neck.length?"boyun yayı zıplar, kafa yalpalar.":"kafa yalpalar."));
+    else wn("Kafa yok: gövdenin üstüne kevgir ya da konserve değdir.");
+    if(R.head.length){
+      if(R.eye.length)ok("Göz: "+R.eye.length+" ("+nm("eye")+"), göz kırpar.");
+      else wn("Göz yok: kafaya rondela ya da kapak değdir.");
+      if(R.mouth.length)ok("Ağız ("+nm("mouth")+"): açılıp kapanır.");
+      if(R.ear.length)ok("Kulak ya da anten: "+R.ear.length+", titrer.");
+    }
+    if(R.arm.length)ok("Kol: "+R.arm.length+" ("+nm("arm")+"), omuzdan sallanır.");
+    else wn("Kol yok: gövdenin yan tarafına çatal ya da zincir değdir.");
+    if(R.leg.length)ok("Bacak: "+R.leg.length+" ("+nm("leg")+"), kalçadan sırayla sallanır.");
+    else wn("Bacak yok: gövdenin altına kaşık ya da çatal değdir.");
+    if(R.skirt.length)ok("Etek ("+nm("skirt")+"): salınır.");
+    if(R.hat.length)ok("Şapka ("+nm("hat")+"): kafayla birlikte yalpalar.");
+    if(R.gear.length)ok("Dişli ya da tekerlek: "+R.gear.length+", döner.");
+    if(R.tail.length)ok("Kuyruk: "+R.tail.length+", sallanır.");
+  }
+
+  // d) Elektrik devresi: hangi bölümler enerjili?
+  const ev=evalCircuit(), pw=poweredGroups(ev,rig);
+  if(!comps.length)out.push(["mu","Devre yok: hareket önizlemesi gösteriliyor. Devre modunda pil ve motor ekleyince yalnız bağlı bölümler oynar."]);
+  else{
+    if(!comps.some(c=>c.t==="battery"))wn("Pil yok: Devre modunda bir LiPo pil ekle.");
+    if(ev.short.length)bd("Kısa devre: pilin + ve − uçları doğrudan birleşmiş, hiçbir şey çalışmaz.");
+    comps.filter(c=>c.t==="motor").forEach(c=>ev.active.has(c.id)?ok("Motor enerjili: "+DN[driveOf(c,rig)]+" hareket ediyor."):wn("Bir motor çalışmıyor: açık devre ya da anahtar kapalı."));
+    comps.filter(c=>c.t==="led").forEach(c=>ev.active.has(c.id)?ok("LED yanıyor: gözler parlıyor."):wn("LED yanmıyor: açık devre ya da anahtar kapalı."));
+  }
+  const em=comps.filter(c=>c.t==="motor"&&ev.active.has(c.id)).length;
+
+  // e) Sonuç ve tahmini satış değeri (rol çeşidi ve çalışan motor arttıkça bonus)
+  const rc=Object.values(R).filter(a=>a.length).length;
+  const total=items.reduce((s,i)=>s+PARTS[i.t].v*i.s,0);
+  const live=!fatal;
+  const worth=Math.round(total*(.6+art/100)*(1+.08*rc+.12*em)*(.5+stab/200));
+  const buyer=rc>=5?"çocuklar oyuncak olarak alır":art>=60?"galeri koleksiyonu için ideal":"pazar tezgahında satılır";
+  draw(live&&rig.plan.size?rig.plan:null,pw);
+  showLog(live
+    ?["verdict ok",(comps.length?(em?"Robot canlandı":"Heykel sağlam, devre çalışmıyor"):(rc?"Heykel sağlam, hareket önizlemesi çalışıyor":"Heykel sağlam"))+": sanat "+art+"/100, tahmini değer "+worth+" ₺, "+buyer+"."]
+    :["verdict bad","Test başarısız: sanat puanı "+art+"/100 ama mühendislik sorunları var."], out);
+  if(live){sfxWin();setTimeout(speak,650)}else sfxFail();
+}
+
+/* ========== 7) ELEKTRİK DEVRESİ ========== */
+// Mekanik modda görünmez. Devre modunda pil, motor, LED ve anahtar yerleştirilir, uçlar kabloyla bağlanır.
+// Kural: kabloyla (ve kapalı anahtarla) birleşen uçlar tek hat olur. Pilin + hattından yüke, yükten pilin - hattına
+// bir yol varsa yük çalışır. + ve - aynı hatta ise kısa devredir. Motor en yakın (ya da seçilen) bölümü oynatır.
+const CT={ // devre elemanları: boyut ve uç noktaları (merkeze göre)
+  battery:{n:"Pil",w:64,h:34,t:{n:[-30,0],p:[30,0]}},
+  motor:{n:"Motor",w:56,h:30,t:{a:[-26,-8],b:[-26,8]}},
+  led:{n:"LED",w:28,h:46,t:{a:[-6,20],b:[6,20]}},
+  switch:{n:"Anahtar",w:48,h:28,t:{a:[-21,0],b:[21,0]}}
+};
+const DN={arm:"Kollar",leg:"Bacaklar",head:"Kafa",eye:"Gözler",mouth:"Ağız",ear:"Kulaklar",skirt:"Etek",gear:"Dişli",tail:"Kuyruk",wheel:"Tekerlekler",engine:"Motor bloğu",steer:"Direksiyon",body:"Gövde"};
+let comps=[], wires=[], cid=1, selC=null, selW=null, wirePrev=null, cev=null, crig=null, mode="mech", cdrag=null;
+const tpos=(c,k)=>({x:c.x+CT[c.t].t[k][0],y:c.y+CT[c.t].t[k][1]});
+const termPos=s=>{const [id,k]=s.split(".");const c=comps.find(o=>o.id===+id);return c&&tpos(c,k)};
+const clampC=c=>{c.x=Math.min(VW-20,Math.max(20,c.x));c.y=Math.min(FLOOR-10,Math.max(20,c.y))};
+
+function evalCircuit(){
+  const par={}, f=k=>par[k]===undefined?(par[k]=k):par[k]===k?k:(par[k]=f(par[k]));
+  const u=(a,b)=>{par[f(a)]=f(b)};
+  comps.forEach(c=>Object.keys(CT[c.t].t).forEach(k=>f(c.id+"."+k)));
+  wires.forEach(w=>u(w.a,w.b));
+  comps.filter(c=>c.t==="switch"&&c.on).forEach(c=>u(c.id+".a",c.id+".b")); // kapalı anahtar hattı birleştirir
+  const res={active:new Set(),nets:new Set(),short:[],f};
+  const E=comps.filter(c=>c.t==="motor"||c.t==="led").map(l=>[l,f(l.id+".a"),f(l.id+".b")]); // yükler hatlar arası kenar
+  const reach=(s,ex)=>{
+    const seen=new Set([s]), q=[s];
+    while(q.length){const n=q.shift();for(const [l,x,y] of E){
+      if(l===ex)continue;
+      const m=x===n?y:y===n?x:null;
+      if(m!==null&&!seen.has(m)){seen.add(m);q.push(m)}
+    }}
+    return seen;
+  };
+  for(const b of comps.filter(c=>c.t==="battery")){
+    const P=f(b.id+".p"), N=f(b.id+".n");
+    if(P===N){res.short.push(b);continue}
+    let any=false;
+    for(const [l,x,y] of E){
+      if(x===y)continue; // uçları kabloyla birleşmiş yükten akım geçmez
+      const rp=reach(P,l), rn=reach(N,l);
+      if((rp.has(x)&&rn.has(y))||(rp.has(y)&&rn.has(x))){res.active.add(l.id);res.nets.add(x);res.nets.add(y);any=true}
+    }
+    if(any){res.nets.add(P);res.nets.add(N)}
+  }
+  return res;
+}
+const availDrives=rig=>["arm","leg","tail","head","eye","mouth","ear","skirt","gear","wheel","engine","steer"].filter(g=>rig.R[g]&&rig.R[g].length).concat("body");
+function driveOf(c,rig){ // seçilmemişse robotta motora en yakın bölüm
+  const av=availDrives(rig);
+  if(c.drive&&av.includes(c.drive))return c.drive;
+  let best="body", bd=1e9;
+  av.forEach(g=>(g==="body"?[rig.body]:rig.R[g]).forEach(o=>{
+    if(!o)return;
+    const d=Math.hypot(o.x-c.x,o.y-c.y);
+    if(d<bd){bd=d;best=g}
+  }));
+  return best;
+}
+function poweredGroups(ev,rig){ // null: devre yok (önizleme), yoksa enerjili bölümler
+  if(!comps.length)return null;
+  const pw=new Set();
+  comps.forEach(c=>{
+    if(!ev.active.has(c.id))return;
+    if(c.t==="motor")pw.add(driveOf(c,rig));
+    if(c.t==="led")pw.add("light");
+  });
+  return pw;
+}
+function circMsg(ev){
+  if(!comps.length)return "Devre boş: pil ve motor ekle, uçlarındaki noktaları kabloyla birleştir.";
+  if(!comps.some(c=>c.t==="battery"))return "Pil yok: bir LiPo pil ekle.";
+  if(ev.short.length)return "Kısa devre: pilin + ve − uçları doğrudan birleşmiş!";
+  const m=comps.filter(c=>c.t==="motor"&&ev.active.has(c.id)).length, l=comps.some(c=>c.t==="led"&&ev.active.has(c.id));
+  if(!m&&!l)return "Açık devre: pilin + ucundan yüke, yükten pilin − ucuna kablo çek. Anahtar açık olmalı.";
+  return "Çalışıyor: "+m+" motor"+(l?" ve LED":"")+" enerjili.";
+}
+
+function drawCirc(ev,rig){
+  const act=ev?ev.active:new Set(), nets=ev?ev.nets:new Set(), cols=["#d92d2d","#2a2f3a","#2f6fe0","#e0a81f","#2e9e5b"];
+  const rg=rig||{R:{},body:null};
+  let h=comps.map(c=>{
+    const d=CT[c.t], sym=c.t==="switch"?(c.on?"swon":"switch"):c.t;
+    const lab=c.t==="motor"?"→ "+DN[driveOf(c,rg)]:c.t==="led"?"→ ışık":c.t==="switch"?(c.on?"açık":"kapalı"):"";
+    return `<g data-c="${c.id}" class="cc${c.id===selC?" sel":""}${act.has(c.id)?" run":""}"><g filter="url(#sh)"><use href="#p-${sym}" x="${c.x-d.w/2}" y="${c.y-d.h/2}" width="${d.w}" height="${d.h}"/></g>`
+      +`<rect class="selr" x="${c.x-d.w/2-3}" y="${c.y-d.h/2-3}" width="${d.w+6}" height="${d.h+6}"/>`
+      +(lab?`<text class="clab" x="${c.x}" y="${c.y+d.h/2+13}">${lab}</text>`:"")+`</g>`;
+  }).join("");
+  h+=wires.map((w,i)=>{
+    const a=termPos(w.a), b=termPos(w.b); if(!a||!b)return "";
+    const sag=Math.min(46,Math.hypot(a.x-b.x,a.y-b.y)/3.5), d=`M${a.x} ${a.y}Q${(a.x+b.x)/2} ${(a.y+b.y)/2+sag} ${b.x} ${b.y}`;
+    return `<g data-w="${i}" class="${i===selW?"sel":""}"><path class="wsel" d="${d}"/><path class="whit" d="${d}"/><path class="wire" stroke="${cols[i%cols.length]}" d="${d}"/>`
+      +(ev&&nets.has(ev.f(w.a))?`<path class="wflow" d="${d}"/>`:"")+`</g>`;
+  }).join("");
+  h+=comps.flatMap(c=>Object.keys(CT[c.t].t).map(k=>{
+    const q=tpos(c,k);
+    return `<g data-term="${c.id}.${k}"><circle class="thit" cx="${q.x}" cy="${q.y}" r="14"/><circle class="term${k==="p"?" pos":k==="n"?" neg":""}" cx="${q.x}" cy="${q.y}" r="4.6"/></g>`;
+  })).join("");
+  if(wirePrev)h+=`<path class="wprev" d="M${wirePrev.x1} ${wirePrev.y1}L${wirePrev.x2} ${wirePrev.y2}"/>`;
+  $("#circ").innerHTML=h;
+}
+function circLive(){ // her değişiklikte devreyi çöz, robotu enerjili bölümlerle oynat
+  crig=buildRig(); cev=evalCircuit();
+  const run=cev.active.size>0, sh=cev.short.length>0; // durum değişince ses: kısa devre, enerji geldi, enerji gitti
+  if(sh&&!lastShort)sfxShort(); else if(run&&!lastRun)sfxPower(true); else if(!run&&lastRun&&!sh)sfxPower(false);
+  lastShort=sh; lastRun=run;
+  drawCirc(cev,crig);
+  draw(crig.plan,poweredGroups(cev,crig)||new Set());
+  say(circMsg(cev));
+}
+function addComp(t,x,y){
+  const c={id:cid++,t,x:Math.round(x),y:Math.round(y)};
+  if(t==="switch")c.on=true;
+  clampC(c); comps.push(c); selC=c.id; selW=null; circLive(); sfxComp(t);
+}
+
+// Devre modu dokunuşları: uçtan uca sürükleyerek kablo çek, parçayı sürükleyerek taşı, anahtara dokunarak aç/kapat
+function circDown(e){
+  stage.setPointerCapture?.(e.pointerId);
+  const p=pt(e), tm=e.target.closest("[data-term]"), cg=e.target.closest("[data-c]"), wg=e.target.closest("[data-w]");
+  if(tm){
+    const from=tm.dataset.term, s=termPos(from);
+    cdrag={k:"wire",from}; wirePrev={x1:s.x,y1:s.y,x2:p.x,y2:p.y}; drawCirc(cev,crig); return;
+  }
+  selW=null;
+  if(cg){
+    const c=comps.find(o=>o.id===+cg.dataset.c);
+    selC=c.id; cdrag={k:"move",c,dx:c.x-p.x,dy:c.y-p.y,x:e.clientX,y:e.clientY,moved:false}; drawCirc(cev,crig);
+  }else if(wg){selC=null;selW=+wg.dataset.w;drawCirc(cev,crig)}
+  else if(arm)addComp(arm,p.x,p.y);
+  else{selC=null;drawCirc(cev,crig)}
+}
+addEventListener("pointermove",e=>{
+  if(!cdrag)return;
+  const p=pt(e);
+  if(cdrag.k==="wire"){const s=termPos(cdrag.from);wirePrev={x1:s.x,y1:s.y,x2:p.x,y2:p.y};drawCirc(cev,crig)}
+  else{
+    if(!cdrag.moved&&Math.hypot(e.clientX-cdrag.x,e.clientY-cdrag.y)>5)cdrag.moved=true;
+    if(cdrag.moved){cdrag.c.x=Math.round(p.x+cdrag.dx);cdrag.c.y=Math.round(p.y+cdrag.dy);clampC(cdrag.c);drawCirc(cev,crig)}
+  }
+});
+addEventListener("pointerup",e=>{
+  if(!cdrag)return;
+  const d=cdrag; cdrag=null; wirePrev=null;
+  if(d.k==="wire"){
+    const to=document.elementFromPoint(e.clientX,e.clientY)?.closest("[data-term]")?.dataset.term;
+    if(to&&to!==d.from&&to.split(".")[0]!==d.from.split(".")[0]&&!wires.some(w=>(w.a===d.from&&w.b===to)||(w.a===to&&w.b===d.from))){wires.push({a:d.from,b:to});sfxWire()}
+  }else if(!d.moved&&d.c.t==="switch"){d.c.on=!d.c.on;sfxSwitch()}
+  circLive();
+});
+addEventListener("pointercancel",()=>{cdrag=null;wirePrev=null});
+
+const CACT={
+  drive:()=>{
+    const c=comps.find(o=>o.id===selC);
+    if(!c||c.t!=="motor")return;
+    const av=availDrives(crig), cur=driveOf(c,crig);
+    c.drive=av[(av.indexOf(cur)+1)%av.length];
+  },
+  del:()=>{
+    sfxDel();
+    if(selC){comps=comps.filter(c=>c.id!==selC);wires=wires.filter(w=>termPos(w.a)&&termPos(w.b));selC=null}
+    else if(selW!=null){wires.splice(selW,1);selW=null}
+  },
+  wires:()=>{wires=[];selW=null}
+};
+const DEMO_W=[["1.p","2.a"],["2.b","3.a"],["2.b","4.a"],["2.b","5.a"],["1.n","3.b"],["1.n","4.b"],["1.n","5.b"]]; // örnek devre kabloları
+
+function setMode(m){
+  sfxTick(); mode=m; document.body.classList.toggle("circ",m==="circ");
+  $("#circ").style.display=m==="circ"?"":"none";
+  $("#bMode").textContent=m==="circ"?"Mekanik":"Devre";
+  arm=null; selC=null; selW=null; select(null);
+  showTab(m==="circ"?"Devre":GROUPS[0]);
+  if(m==="circ")circLive();
+  else{draw();say("Mekanik mod: pil ve kablolar görünmez. Devre için Devre düğmesine bas.")}
+}
+
+/* ========== 6) KAYIT (Local Storage) ========== */
+const mem={};
+const store={
+  get:k=>{try{return localStorage.getItem(k)}catch{return mem[k]??null}},
+  set:(k,v)=>{try{localStorage.setItem(k,v)}catch{mem[k]=v}}
+};
+function save(){
+  store.set(KEY,JSON.stringify({v:5,items:items.map(({t,x,y,r,s})=>({t,x:Math.round(x-VW/2),y:Math.round(y-FLOOR),r,s})),comps:comps.map(c=>({...c,x:Math.round(c.x-VW/2),y:Math.round(c.y-FLOOR)})),wires}));
+  say("Tasarım kaydedildi: "+items.length+" parça.");
+}
+function load(silent){
+  const raw=store.get(KEY);
+  if(!raw){if(!silent)say("Kayıtlı tasarım bulunamadı.");return false}
+  try{
+    const d=JSON.parse(raw);
+    if(![4,5].includes(d.v)||!Array.isArray(d.items))throw new Error("sürüm");
+    items=d.items.filter(o=>known(o.t)&&[o.x,o.y,o.r,o.s].every(Number.isFinite))
+      .map(o=>({id:nid++,t:o.t,x:o.x+VW/2,y:o.y+FLOOR,r:o.r,s:Math.min(2.5,Math.max(.4,o.s))}));
+    comps=(d.comps||[]).filter(c=>Object.hasOwn(CT,c.t)&&[c.x,c.y,c.id].every(Number.isFinite)).map(c=>({...c,x:c.x+VW/2,y:c.y+FLOOR}));
+    const ids=new Set(comps.map(c=>c.id));
+    wires=(d.wires||[]).filter(w=>ids.has(+String(w.a).split(".")[0])&&ids.has(+String(w.b).split(".")[0]));
+    cid=comps.reduce((m,c)=>Math.max(m,c.id),0)+1; selC=null; selW=null;
+    selId=null; draw(); if(mode==="circ")circLive();
+    say(silent?"Önceki oturumdaki tasarım geri yüklendi.":"Tasarım yüklendi.");
+    return true;
+  }catch{
+    say("Kayıt okunamadı: bozuk ya da eski sürümden. Yeni bir tasarım kaydet.");
+    return false;
+  }
+}
+
+/* ========== SES (Web Audio ile üretilir, harici dosya yok) ========== */
+// Parça sesleri malzemeye göre (metal, cam, ahşap, lastik, yay, zincir). Robotun sesi kafasının büyüklüğü ve
+// malzemesinden çıkar. Animasyon çalışırken enerjili bölümler kendi sesini çıkarır: servo, ayak sesi, göz kırpma,
+// konuşma, dişli, tekerlek, motor bloğu, egzoz.
+let AC=null, MG=null, NB=null, soundOn=store.get("hurda-ses")!=="0", scape=[], scapeSig="", lastAct=new Set(), lastDt=0, lastShort=false, lastRun=false;
+function audio(){
+  if(!soundOn)return null;
+  const C=window.AudioContext||window.webkitAudioContext; if(!C)return null;
+  if(!AC){
+    AC=new C(); MG=AC.createGain(); MG.gain.value=.55;
+    const cp=AC.createDynamicsCompressor(); MG.connect(cp); cp.connect(AC.destination);
+    NB=AC.createBuffer(1,AC.sampleRate,AC.sampleRate);
+    const d=NB.getChannelData(0); for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
+  }
+  if(AC.state==="suspended")AC.resume();
+  return AC;
+}
+const T=()=>AC.currentTime;
+const pan=(g,v)=>{if(AC.createStereoPanner){const p=AC.createStereoPanner();p.pan.value=v;g.connect(p);p.connect(MG)}else g.connect(MG)};
+function env(g,t0,a,d,v){g.gain.setValueAtTime(.0001,t0);g.gain.exponentialRampToValueAtTime(v,t0+a);g.gain.exponentialRampToValueAtTime(.0001,t0+a+d)}
+function tone(f,d,o={}){
+  if(!audio())return;
+  const {v=.15,type="sine",f2,a=.004,pn=0,delay=0}=o, t0=T()+delay, os=AC.createOscillator(), g=AC.createGain();
+  os.type=type; os.frequency.setValueAtTime(f,t0); if(f2)os.frequency.exponentialRampToValueAtTime(f2,t0+d);
+  env(g,t0,a,d,v); os.connect(g); pan(g,pn); os.start(t0); os.stop(t0+a+d+.05);
+}
+function noise(d,o={}){
+  if(!audio())return;
+  const {v=.1,f=1500,q=1,type="bandpass",f2,delay=0,pn=0}=o, t0=T()+delay;
+  const s=AC.createBufferSource(), fl=AC.createBiquadFilter(), g=AC.createGain();
+  s.buffer=NB; fl.type=type; fl.frequency.setValueAtTime(f,t0); if(f2)fl.frequency.exponentialRampToValueAtTime(f2,t0+d); fl.Q.value=q;
+  env(g,t0,.003,d,v); s.connect(fl); fl.connect(g); pan(g,pn); s.start(t0,Math.random()*.5); s.stop(t0+d+.05);
+}
+function hum(o){ // sürekli ses: durdurma işlevi scape listesine eklenir
+  if(!audio())return;
+  const s=o.noise?AC.createBufferSource():AC.createOscillator(), fl=AC.createBiquadFilter(), g=AC.createGain(), ex=[];
+  if(o.noise){s.buffer=NB;s.loop=true}else{s.type=o.type||"sawtooth";s.frequency.value=o.f}
+  fl.type="lowpass"; fl.frequency.value=o.ff||500; fl.Q.value=.7;
+  g.gain.setValueAtTime(.0001,T()); g.gain.exponentialRampToValueAtTime(o.v,T()+.25);
+  s.connect(fl); fl.connect(g);
+  if(o.pl&&AC.createStereoPanner){ // araç gidip gelirken sesi sağdan sola gezer
+    const p=AC.createStereoPanner(), l=AC.createOscillator(), lg=AC.createGain();
+    l.frequency.value=o.pl; lg.gain.value=.7; l.connect(lg); lg.connect(p.pan); l.start(); ex.push(l); g.connect(p); p.connect(MG);
+  }else g.connect(MG);
+  if(o.lf){const l=AC.createOscillator(),lg=AC.createGain();l.frequency.value=o.lf;lg.gain.value=o.v*(o.ld||.5);l.connect(lg);lg.connect(g.gain);l.start();ex.push(l)}
+  s.start();
+  scape.push(()=>{
+    const t=T(); g.gain.cancelScheduledValues(t); g.gain.setValueAtTime(Math.max(g.gain.value,.0002),t); g.gain.exponentialRampToValueAtTime(.0001,t+.2);
+    setTimeout(()=>{try{s.stop();ex.forEach(e=>e.stop())}catch{}},260);
+  });
+}
+function every(ms,fn,first=0){
+  const id0=setTimeout(()=>{fn();const id=setInterval(fn,ms);scape.push(()=>clearInterval(id))},first);
+  scape.push(()=>clearTimeout(id0));
+}
+const stopScape=()=>{scape.forEach(f=>f());scape=[];scapeSig=""};
+
+// --- malzemeye göre parça sesi ---
+const GLASS=["bottle","bulb","ball","window","lamp","eye"], WOOD=["block","stick","woodbox","plank"], RUB=["tire","wheel","domino"];
+const matOf=t=>GLASS.includes(t)?"glass":WOOD.includes(t)?"wood":RUB.includes(t)?"rubber":t==="spring"?"spring":t==="chain"?"chain":"metal";
+function sfxPlace(t,q=1){
+  const p=PARTS[t]||{w:40,h:40}, m=matOf(t), base=Math.max(500,2600-Math.sqrt(p.w*p.h)*14)*(.95+Math.random()*.1), v=.14*q;
+  if(m==="glass"){tone(base*1.1,.7,{v:v*.9});tone(base*2.7,.35,{v:v*.3})}
+  else if(m==="wood"){tone(200+Math.random()*40,.09,{v,type:"triangle"});noise(.05,{v:v*.8,f:900,q:.8})}
+  else if(m==="rubber"){tone(110,.14,{v:v*1.2,f2:60});noise(.04,{v:v*.3,f:300,type:"lowpass"})}
+  else if(m==="spring"){tone(420,.45,{v:v*.7,f2:160,type:"triangle"});tone(840,.4,{v:v*.2,f2:300})}
+  else if(m==="chain"){for(let i=0;i<4;i++)noise(.04,{v:v*.7,f:2600+Math.random()*900,q:3,delay:i*.045})}
+  else{tone(base,.5,{v:v*.8});tone(base*2.76,.28,{v:v*.35});tone(base*5.4,.14,{v:v*.2});noise(.02,{v:v*.5,f:4000})}
+}
+const sfxTick=()=>tone(1100,.04,{v:.07,type:"triangle"});
+const sfxDel=()=>{noise(.14,{v:.1,f:3000,f2:400,q:1.2});tone(300,.1,{v:.06,f2:120})};
+const sfxWire=()=>{tone(700,.07,{type:"square",v:.06,f2:1300});noise(.02,{v:.08,f:5000})};
+const sfxSwitch=()=>{noise(.015,{v:.2,f:1800,q:2});tone(220,.05,{type:"square",v:.06})};
+const sfxWin=()=>[523,659,784,1047].forEach((f,i)=>tone(f,.18,{type:"triangle",v:.12,delay:i*.1}));
+const sfxFail=()=>{tone(180,.35,{type:"sawtooth",v:.1,f2:90});tone(150,.4,{type:"sawtooth",v:.08,f2:70,delay:.18})};
+const sfxShort=()=>{noise(.7,{v:.2,f:2000,q:.5,type:"highpass"});tone(110,.7,{type:"sawtooth",v:.12,f2:70});for(let i=0;i<6;i++)noise(.03,{v:.15,f:3000,q:2,delay:.08*i+Math.random()*.05})};
+const sfxPower=on=>on?(tone(200,.25,{type:"sawtooth",v:.08,f2:700}),tone(900,.08,{type:"square",v:.05,delay:.2})):tone(600,.3,{type:"sawtooth",v:.07,f2:120});
+function sfxComp(t){
+  if(t==="battery"){tone(160,.18,{v:.12,f2:90});tone(1200,.06,{v:.06})}
+  else if(t==="motor")tone(120,.3,{type:"sawtooth",v:.06,f2:300});
+  else if(t==="led")tone(1800,.12,{v:.08,f2:2400});
+  else sfxSwitch();
+}
+
+// --- robotun sesi: kafa büyüklüğü ve malzemesinden ---
+function voice(){
+  const h=HEADS().sort((a,b)=>a.y-b.y)[0]||items[0];
+  if(!h)return {f:300,w:"square"};
+  const m=matOf(h.t);
+  return {f:Math.min(720,Math.max(170,520-hext(h).hx*4.2)),w:m==="glass"?"sine":m==="wood"?"triangle":"square"};
+}
+function bleep(vo,vol=.07,delay=0){
+  const f=vo.f*[1,1.25,1.5,2,.75,1.8][Math.random()*6|0];
+  tone(f,.05+Math.random()*.08,{type:vo.w,v:vol,f2:f*(.85+Math.random()*.4),delay,a:.006});
+}
+function speak(n=5+(Math.random()*4|0)){const vo=voice();for(let i=0;i<n;i++)bleep(vo,.09,i*.13+Math.random()*.03)}
+const touchSfx=i=>{if(HEAD.includes(i.t)||i.t==="tab"||i.t==="eye")speak(3+(Math.random()*3|0));else sfxPlace(i.t,.45)};
+
+// --- animasyon sesleri: hangi bölüm hareket ediyorsa sesi çalar ---
+const servo=(f,d,pn=0,v=.03)=>{tone(f,d,{type:"square",v,f2:f*1.4,pn,a:.03});noise(d,{v:v*1.1,f:1800,q:2,pn})};
+const clank=(pn=0)=>{tone(520+Math.random()*80,.16,{v:.06,pn});noise(.03,{v:.05,f:3000,q:2,pn})};
+function setScape(act,dt){
+  lastAct=act; lastDt=dt;
+  const sig=[...act].sort().join(",")+"|"+(dt?dt.toFixed(1):0);
+  if(sig===scapeSig)return;
+  stopScape(); scapeSig=sig;
+  if(!AC||!soundOn||!act.size)return;
+  const vo=voice(), has=g=>act.has(g); let st=0;
+  if(has("leg"))every(450,()=>{st++;servo(150,.34,st%2?-.5:.5);clank(st%2?-.5:.5)});
+  if(has("arm"))every(450,()=>servo(210,.32,(st++%2)?.6:-.6));
+  if(has("head"))every(1100,()=>{servo(95,.5,0,.035);tone(330,.2,{v:.03,f2:200,type:"triangle"})});
+  if(has("tail"))every(500,()=>noise(.18,{v:.03,f:1200,q:1.2,f2:600}));
+  if(has("eye"))every(3200,()=>{noise(.012,{v:.06,f:3500,q:4});tone(2400,.03,{v:.03})},3040);
+  if(has("mouth"))every(350,()=>{if(Math.random()<.85)bleep(vo,.08)});
+  if(has("ear"))every(300,()=>noise(.02,{v:.03,f:4200,q:5}));
+  if(has("gear"))every(160,()=>{noise(.015,{v:.04,f:2200,q:6});tone(1800,.02,{v:.02,type:"square"})});
+  if(has("skirt"))every(450,()=>noise(.2,{v:.015,f:2500,q:.5,type:"highpass"}));
+  if(has("body"))every(450,()=>tone(80,.12,{v:.03,f2:55}));
+  if(has("steer"))every(900,()=>tone(1500,.12,{v:.025,f2:1900}));
+  if(has("wheel"))hum({noise:true,ff:260,v:.06,pl:dt?1/(2*dt):0});
+  if(has("engine")){hum({type:"sawtooth",f:46,ff:380,v:.07,lf:7,ld:.7});hum({type:"square",f:92,ff:300,v:.03,lf:7,ld:.8});every(280,()=>noise(.09,{v:.035,f:500,q:.8,type:"lowpass"}))}
+  if(has("light"))hum({type:"sine",f:118,ff:600,v:.018});
+}
+["pointerdown","pointerup","click","keydown"].forEach(ev=>addEventListener(ev,()=>{if(soundOn)audio()},{passive:true}));
+addEventListener("visibilitychange",()=>{
+  if(document.hidden){stopScape();AC&&AC.suspend()}else{AC&&AC.resume();setScape(lastAct,lastDt)}
+});
+
+/* ========== 7) ÇİZİM VE ARAYÜZ ========== */
+const tf=i=>`translate(${i.x} ${i.y}) rotate(${i.r}) scale(${i.s})`;
+function draw(plan,pw){ // plan: parça id -> animasyon bilgisi; pw: enerjili bölümler (Set), null = hepsi (devresiz önizleme)
+  const A=g=>!pw||pw.has(g), root=$("#items"), act=new Set();
+  const hasW=!!plan&&[...plan.values()].some(q=>q.locG==="wheel");
+  let span=0;
+  if(hasW&&A("wheel")&&mode!=="circ"&&items.length){ // tekerlekler enerjiliyse araç sahnede ileri geri sürer
+    const lo=Math.min(...items.map(i=>i.x-hext(i).hx)), hi=Math.max(...items.map(i=>i.x+hext(i).hx));
+    span=Math.max(0,Math.min(lo-12,VW-12-hi,150));
+  }
+  root.classList.remove("still");
+  root.classList.toggle("dim",mode==="circ");
+  root.classList.toggle("driving",span>10);
+  root.style.setProperty("--dd",span+"px");
+  root.style.setProperty("--dt",Math.max(1.4,2*span/90).toFixed(2)+"s");
+  root.innerHTML=items.map(i=>{
+    const p=PARTS[i.t], x=-p.w/2, y=-p.h/2, q=(plan&&plan.get(i.id))||{};
+    const r=q.rig&&A(q.rigG)?q.rig:null, bob=q.bob&&A("body"), loc=q.loc&&A(q.locG)?q.loc:"";
+    const lit=pw&&pw.has("light")&&(q.locG==="eye"||q.locG==="light")?" lit":"";
+    const rs=r?"--ox:"+r.ox+"px;--oy:"+r.oy+"px;--a:"+r.a+";--d:"+r.d+"s;--dl:"+r.dl+"s":"";
+    const puff=q.smoke&&A("engine")?'<g transform="translate('+(x-3)+' 0)"><circle class="pf" r="4"/><circle class="pf" style="animation-delay:.4s" r="4"/><circle class="pf" style="animation-delay:.8s" r="4"/></g>':"";
+    const wd=loc==="roll"?"--wd:"+Math.round((span>10?2*span/(p.w*i.s/2):12.5)*57.3)+"deg":""; // yol/yarıçap kadar döner
+    if(r)act.add(q.rigG); if(bob)act.add("body"); if(loc)act.add(q.locG); if(puff)act.add("engine");
+    return `<g data-id="${i.id}" class="${i.id===selId?"sel":""}"><g class="${bob?"bob":""}"><g class="${r?"rig swing":""}" style="${rs}">`
+      +`<g filter="url(#sh)"><g class="tf" transform="${tf(i)}"><g class="loc ${loc}${lit}" style="${wd}">`
+      +`<use href="#p-${i.t}" x="${x}" y="${y}" width="${p.w}" height="${p.h}"/>${puff}</g></g></g>`
+      +`<g class="tf" transform="${tf(i)}"><rect class="selr" x="${x-3}" y="${y-3}" width="${p.w+6}" height="${p.h+6}"/></g></g></g></g>`;
+  }).join("");
+  setScape(act,span>10?Math.max(1.4,2*span/90):0);
+}
+const movePart=i=>$$('[data-id="'+i.id+'"] .tf').forEach(g=>g.setAttribute("transform",tf(i)));
+const select=id=>{selId=id;$$("#items [data-id]").forEach(g=>g.classList.toggle("sel",+g.dataset.id===id))};
+function showLog(head,lines){
+  $("#log").innerHTML=(head?'<div class="'+head[0]+'">'+head[1]+"</div>":"")
+    +lines.map(([k,m])=>'<div class="'+k+'">'+m+"</div>").join("");
+  const st=$("#status"); // telefonda tek satırlık durum çubuğu, ayrıntılar alttan açılan sayfada
+  st.textContent=(head||lines[0]||["",""])[1].replace(/<[^>]+>/g,"");
+  st.className=head?head[0].split(" ")[1]:"mu"; st.style.pointerEvents=head?"auto":"none";
+  $("#logbox").classList.toggle("open",!!head);
+}
+const say=m=>showLog(null,[["mu",m]]);
+
+// Masa ekranı kenardan kenara doldurur: dünya en az 400x540 birim, fazlası arka plan ve zemin olur.
+// Parçalar ekran değişince orta-alt noktaya sabit kalır.
+function fit(){
+  const wrap=$(".stagewrap"), cw=wrap.clientWidth, ch=wrap.clientHeight;
+  if(!cw||!ch)return;
+  const s=Math.min(cw/400,ch/540), nw=cw/s, nh=ch/s, nf=nh-Math.max(54,48/s);
+  const dx=(nw-VW)/2, dy=nf-FLOOR;
+  items.forEach(i=>{i.x+=dx;i.y+=dy}); comps.forEach(c=>{c.x+=dx;c.y+=dy});
+  VW=nw; FLOOR=nf;
+  stage.setAttribute("viewBox","0 0 "+nw+" "+nh);
+  const set=(id,o)=>{const el=$(id);for(const k in o)el.setAttribute(k,o[k])};
+  set("#bg",{width:nw,height:nf}); set("#fl",{y:nf,width:nw,height:nh-nf}); set("#fl2",{y:nf,width:nw});
+  if(mode==="circ")circLive();else draw();
+}
+
+// Envanter: gerçek parça çizimleriyle küçük resimler
+const inv=$("#inv"), stage=$("#stage");
+const thumb=t=>{const p=PARTS[t]||CT[t],m=Math.max(p.w,p.h);return `<svg class="th" viewBox="${(p.w-m)/2} ${(p.h-m)/2} ${m} ${m}"><use href="#p-${t}" width="${p.w}" height="${p.h}"/></svg>`};
+const GROUPS=[...new Set(Object.values(PARTS).map(p=>p.g))];
+let curTab=GROUPS[0];
+function showTab(g){ // telefonda yan kaydırma olmasın diye parçalar sekmelere ayrıldı
+  curTab=g;
+  const circ=mode==="circ", names=circ?["Devre"]:GROUPS;
+  $("#tabs").innerHTML=names.map(n=>`<button data-g="${n}" class="${n===g?"act":""}">${n}</button>`).join("");
+  const list=circ?Object.entries(CT):Object.entries(PARTS).filter(([,p])=>p.g===g);
+  inv.innerHTML=list.map(([k,p])=>`<button class="item" data-t="${k}">${thumb(k)}<span>${p.n}</span></button>`).join("");
+  markArm();
+}
+$("#tabs").onclick=e=>{const b=e.target.closest("[data-g]");if(b)showTab(b.dataset.g)};
+
+const pt=e=>{const p=stage.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(stage.getScreenCTM().inverse())};
+function add(t,x,y){
+  if(mode==="circ")return addComp(t,x,y);
+  const i={id:nid++,t,x,y,r:0,s:1}; items.push(i); settle(i); selId=i.id; draw(); sfxPlace(t);
+}
+const markArm=()=>$$(".item").forEach(el=>el.classList.toggle("sel",el.dataset.t===arm));
+
+// Sürükle-bırak (Pointer Events: fare ve dokunmatik).
+// Kısa dokunuş: envanterden parçayı seç, sonra masaya dokun. Masadaki parçayı sürükleyerek taşı.
+let drag=null,ghost=null;
+inv.addEventListener("pointerdown",e=>{
+  const b=e.target.closest(".item"); if(!b)return;
+  drag={k:"new",t:b.dataset.t,x:e.clientX,y:e.clientY,moved:false};
+});
+stage.addEventListener("pointerdown",e=>{
+  if(mode==="circ")return circDown(e);
+  const g=e.target.closest("[data-id]");
+  if(g){
+    const i=items.find(o=>o.id===+g.dataset.id), p=pt(e);
+    select(i.id); touchSfx(i);
+    drag={k:"move",i,dx:i.x-p.x,dy:i.y-p.y,x:e.clientX,y:e.clientY,moved:false};
+  }else if(arm){const p=pt(e);add(arm,p.x,p.y)}
+  else select(null);
+});
+addEventListener("pointermove",e=>{
+  if(!drag)return;
+  if(!drag.moved&&Math.hypot(e.clientX-drag.x,e.clientY-drag.y)>6){
+    drag.moved=true;
+    if(drag.k==="move")$("#items").classList.add("still"); // sürüklerken animasyon durur
+    if(drag.k==="new"){ghost=document.createElement("div");ghost.className="ghost";ghost.innerHTML=thumb(drag.t);document.body.append(ghost)}
+  }
+  if(!drag.moved)return;
+  if(drag.k==="new"){ghost.style.left=e.clientX+"px";ghost.style.top=e.clientY+"px"}
+  else{const p=pt(e);drag.i.x=p.x+drag.dx;drag.i.y=p.y+drag.dy;settle(drag.i);movePart(drag.i)}
+});
+addEventListener("pointerup",e=>{
+  if(!drag)return;
+  const d=drag; drag=null; ghost?.remove(); ghost=null;
+  if(d.k!=="new")return;
+  if(d.moved){
+    const r=stage.getBoundingClientRect();
+    if(e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom){const p=pt(e);add(d.t,p.x,p.y)}
+  }else{
+    arm=arm===d.t?null:d.t; markArm(); sfxTick();
+    say(arm?"Seçili: "+(PARTS[arm]||CT[arm]).n+". Masada bir yere dokun.":"Seçim kaldırıldı.");
+  }
+});
+addEventListener("pointercancel",()=>{drag=null;ghost?.remove();ghost=null});
+
+// Seçili parçayı düzenle
+const ACT={
+  rotL:i=>{i.r-=15}, rotR:i=>{i.r+=15},
+  big:i=>{i.s=Math.min(2.5,+(i.s*1.1).toFixed(2))}, small:i=>{i.s=Math.max(.4,+(i.s/1.1).toFixed(2))},
+  copy:i=>{const c={...i,id:nid++,x:i.x+16,y:i.y-8};items.push(c);selId=c.id},
+  front:i=>{items.splice(items.indexOf(i),1);items.push(i)},
+  del:i=>{items.splice(items.indexOf(i),1);selId=null;sfxDel()}
+};
+$("#tools").onclick=e=>{
+  const cb=e.target.closest("[data-ca]"); if(cb){CACT[cb.dataset.ca]();circLive();return}
+  const b=e.target.closest("[data-a]"); if(!b)return;
+  const i=items.find(o=>o.id===selId);
+  if(!i)return say("Önce masadaki bir parçaya dokun.");
+  sfxTick();ACT[b.dataset.a](i);
+  const cur=items.find(o=>o.id===selId); if(cur)settle(cur);
+  draw();
+};
+
+// Örnek robot: [tür, x, y, derece, ölçek]
+// Örnek robotlar: [tür, bağlandığı parça sırası (-1: zemine oturur), yön, kayma, derece, ölçek, ikinci kayma]
+// yön: T üstüne, B altına, L soluna, R sağına dayanır; C üstüne biner. Parçalar birbirine değecek şekilde hesaplanır.
+const DEMOS=[
+ {n:"Balerin",p:[["pan",-1,"",0,0,1.25],["spoon",0,"T",-20,0,.85],["spoon",0,"T",20,0,.85],["tin",1,"T",20,0,1],["can",3,"T",0,0,1],["spring",4,"T",0,0,1],["bowl",5,"T",0,0,1],["gear",6,"C",-17,0,.8,0],["gear",6,"C",17,0,.8,0],["fork",4,"L",-22,-80,.8],["fork",4,"R",-30,40,.8]]},
+ {n:"Et tokmaklı savaşçı",p:[["spoon",-1,"",-32,0,.95],["spoon",-1,"",32,0,.95],["bcan",0,"T",32,0,1],["bowl",2,"T",0,0,1.05],["tin",3,"T",0,0,.9],["washer",3,"C",-15,0,.8,-2],["washer",3,"C",15,0,.8,-2],["tab",3,"C",0,90,.5,14],["hook",3,"L",-14,-40,.45],["hook",3,"R",-14,40,.45],["masher",2,"R",-28,25,.9],["chain",2,"L",-10,-75,.8],["lid",2,"C",-14,0,.55,12]]},
+ {n:"Çığlıkçı",p:[["woodbox",-1,""],["spoon",0,"T",-24,8,.85],["spoon",0,"T",24,-8,.85],["soda",1,"T",24,0,1],["tuna",3,"T",0,0,1.15],["spring",4,"T",-28,-25,.9],["spring",4,"T",-9,-8,.9],["spring",4,"T",9,8,.9],["spring",4,"T",28,25,.9],["gear",4,"C",-16,0,.75,-6],["knob",4,"C",14,0,.9,-6],["tab",4,"C",0,0,.8,12],["fork",3,"R",18,35,.85],["fork",3,"L",18,-35,.85]]},
+ {n:"Maymun",p:[["rod",-1,"",-30,0,.9],["rod",-1,"",30,0,.9],["cube",0,"T",30,0,1],["bowl",2,"T",0,0,1],["nut",3,"C",-14,0,.9,-4],["nut",3,"C",14,0,.9,-4],["tab",3,"C",0,0,.5,12],["rod",2,"L",-6,-20,.8],["rod",2,"R",-6,20,.8],["hook",2,"R",22,0,.9]]},
+ {n:"Kedi",p:[["rod",-1,"",-34,0,.8],["rod",-1,"",34,0,.8],["tuna",0,"T",34,0,1.1],["bowl",2,"T",0,0,.8],["sheet",3,"T",-22,-12,.8],["sheet",3,"T",22,12,.8],["eye",3,"C",-12,0,.55,0],["eye",3,"C",12,0,.55,0],["tab",3,"C",0,0,.35,12],["bolt",3,"L",8,-8,.6],["bolt",3,"L",14,8,.6],["bolt",3,"R",8,8,.6],["bolt",3,"R",14,-8,.6],["hook",2,"R",-6,0,.9]]},
+ {n:"Gözlüklü küre",p:[["plank",-1,""],["ball",0,"T",0,0,1.3],["bowl",1,"T",0,0,.9],["brush",2,"T",0,0,1.2],["washer",2,"C",-16,0,1,-2],["washer",2,"C",16,0,1,-2],["eye",2,"C",-16,0,.6,-2],["eye",2,"C",16,0,.6,-2],["tab",2,"C",0,0,.5,14],["fork",1,"L",-6,-60,.7],["pliers",1,"R",-6,55,.7]]},
+ {n:"Kayakçı",p:[["knife",-1,"",-46,90,.7],["knife",-1,"",46,90,.7],["spoon",0,"T",20,6,.8],["spoon",1,"T",-20,-6,.8],["bcan",2,"T",26,0,1],["cube",4,"T",0,0,.9],["brush",5,"T",-10,0,1],["eye",5,"C",-12,0,.6,-4],["eye",5,"C",12,0,.6,-4],["spatula",4,"L",-10,-30,.9],["stick",4,"R",0,25,.9]]},
+ {n:"Çubuk atlı",p:[["disc",-1,""],["spoon",0,"T",-24,0,.85],["spoon",0,"T",24,0,.85],["can",1,"T",24,0,.9],["bowl",3,"T",0,0,.85],["funnel",4,"T",0,180,.6],["eye",4,"C",-12,0,.8,-2],["eye",4,"C",12,0,.8,-2],["fork",3,"L",-10,-50,.85],["stick",3,"R",10,90,.8],["block",9,"R",0,0,.9],["eye",10,"C",-10,0,.7,-6],["spoon",10,"T",0,20,.6]]},
+ {n:"Paten fare",p:[["disc",-1,""],["wheel",0,"T",-46,0,.8],["wheel",0,"T",-18,0,.8],["wheel",0,"T",18,0,.8],["wheel",0,"T",46,0,.8],["rod",1,"T",14,0,.8],["rod",4,"T",-14,0,.8],["can",5,"T",32,0,.75],["bowl",7,"T",0,0,.7],["funnel",8,"L",4,90,.7],["dial",8,"T",14,0,.8],["eye",8,"C",8,0,.5,-2],["hook",7,"R",18,0,1],["fork",7,"L",-8,-70,.6],["fork",7,"R",-8,70,.6]]},
+ {n:"Tek tekerlekli",p:[["disc",-1,""],["wheel",0,"T",0,0,2],["spoon",1,"T",-18,15,.55],["spoon",1,"T",18,-15,.55],["tin",2,"T",18,0,.85],["spice",4,"T",0,0,.9],["bowl",5,"T",0,0,.55],["eye",6,"C",-8,0,.4,-2],["eye",6,"C",8,0,.4,-2],["knob",6,"T",0,0,.5],["fork",5,"L",-14,-80,.6],["stick",5,"R",-10,15,.6],["tin",11,"T",0,0,.8]]},
+ {n:"Fil",p:[["domino",-1,"",-18,0,1.1],["domino",-1,"",18,0,1.1],["soda",0,"T",18,0,1],["bowl",2,"T",0,0,1],["tin",3,"T",0,0,.6],["knob",4,"T",0,0,.5],["sheet",3,"L",-6,-10,1.3],["sheet",3,"R",-6,10,1.3],["eye",3,"C",-12,0,.6,-2],["eye",3,"C",12,0,.6,-2],["hose",3,"C",0,0,.8,34],["chain",2,"L",-6,-60,.6],["chain",2,"R",-6,60,.6]]},
+ {n:"Kutu araba",p:[["tire",-1,"",-58,0,1.1],["tire",-1,"",58,0,1.1],["frame",0,"T",58,0,.7],["tuna",2,"T",0,0,1.15],["bowl",3,"T",-12,0,.6],["bulb",3,"R",4,90,.5]]},
+ {n:"Şişe tanker",p:[["tire",-1,"",-74,0,1],["tire",-1,"",-28,0,1],["tire",-1,"",66,0,1],["frame",0,"T",74,0,1],["bottle",3,"T",-26,90,1.2],["cube",3,"T",70,0,.75],["bulb",5,"R",6,90,.5],["bowl",5,"T",0,0,.4]]},
+ {n:"Kola kamyonu",p:[["tire",-1,"",-70,0,1],["tire",-1,"",-26,0,1],["tire",-1,"",72,0,1],["frame",0,"T",72,0,1.05],["soda",3,"T",-62,90,1],["soda",4,"R",0,90,1],["soda",4,"T",20,90,1],["bcan",3,"T",78,0,.7],["bulb",7,"R",8,90,.5]]},
+ {n:"Spor araba",p:[["shell",-1,"",0,0,1.1],["tire",0,"C",-52,0,1,10],["tire",0,"C",52,0,1,10],["spoiler",0,"C",-70,0,.9,-12],["bumper",0,"R",-2,90,.8],["steer",0,"C",20,0,.6,-8],["seat",0,"C",-4,0,.6,-4],["lamp",0,"R",-6,0,.5],["pipe",0,"L",12,0,.7],["engine",0,"C",56,0,.55,-26]]},
+ {n:"Jip",p:[["tire",-1,"",-62,0,1.3],["tire",-1,"",62,0,1.3],["frame",0,"T",62,0,.9],["box",2,"T",-30,0,.9],["cab",2,"T",32,0,.85],["engine",2,"T",76,0,.6],["pipe",2,"L",-8,0,.7],["steer",4,"C",-6,0,.55,-6],["lamp",4,"R",18,0,.6],["bumper",2,"R",0,90,.8]]},
+ {n:"Canavar kamyon",p:[["tire",-1,"",-62,0,1.8],["tire",-1,"",62,0,1.8],["frame",0,"T",62,0,.9],["shell",2,"T",0,0,.9],["engine",3,"T",40,0,.6],["pipe",3,"T",-34,90,.8],["lamp",3,"R",-4,0,.5],["steer",3,"C",8,0,.5,-6],["bumper",3,"R",8,90,.7]]},
+ {n:"Hurda kamyon",p:[["tire",-1,"",-82,0,1],["tire",-1,"",-38,0,1],["tire",-1,"",70,0,1],["frame",0,"T",82,0,1.1],["box",3,"T",-34,0,1.1],["cab",3,"T",76,0,.95],["pipe",3,"T",36,90,.8],["lamp",5,"R",14,0,.5],["bumper",3,"R",0,90,.8],["steer",5,"C",-6,0,.5,-6]]}
+];
+function buildDemo(spec){
+  const out=[];
+  spec.forEach(([t,ref,side,o=0,r=0,s=1,o2=0])=>{
+    const c={id:nid++,t,x:VW/2,y:FLOOR,r,s}, H=hext(c);
+    if(ref<0){c.y=FLOOR-H.hy;c.x=VW/2+o}
+    else{
+      const p=out[ref], P=hext(p), ov=4;
+      if(side==="T"){c.y=p.y-P.hy-H.hy+ov;c.x=p.x+o}
+      else if(side==="B"){c.y=p.y+P.hy+H.hy-ov;c.x=p.x+o}
+      else if(side==="L"){c.x=p.x-P.hx-H.hx+ov;c.y=p.y+o}
+      else if(side==="R"){c.x=p.x+P.hx+H.hx-ov;c.y=p.y+o}
+      else{c.x=p.x+o;c.y=p.y+o2}
+    }
+    out.push(c);
+  });
+  return out;
+}
+let demoI=-1;
+function demoCircuit(){ // robotun gövdesine göre örnek devre: anahtar, iki motor ve LED paralel
+  const rig=buildRig(), R=rig.R, b=rig.body||{x:VW/2,y:FLOOR-200};
+  const at=(o,dx,dy,fx,fy)=>o?{x:o.x+dx,y:o.y+dy}:{x:b.x+fx,y:b.y+fy};
+  const car=R.wheel.length>=2&&!R.leg.length, bu=items.find(o=>o.t==="bulb"||o.t==="lamp"), wl=R.wheel;
+  const arm=car?at(wl[0],8,-34):at(R.arm[0],0,36,-70,30), leg=car?at(wl[wl.length-1],-8,-34):at(R.leg[0],36,-24,70,70);
+  const led=bu?at(bu,0,-40):at(R.head[0],0,-46,0,-80);
+  comps=[["battery",b.x,b.y-4],["switch",b.x+84,b.y+30],["motor",arm.x,arm.y],["motor",leg.x,leg.y],["led",led.x,led.y]]
+    .map(([t,x,y],i)=>{const c={id:i+1,t,x:Math.round(x),y:Math.round(y)};if(t==="switch")c.on=true;clampC(c);return c});
+  wires=DEMO_W.map(([a,b])=>({a,b})); cid=comps.length+1; selC=null; selW=null;
+}
+
+$("#bTest").onclick=testSystem;
+$("#bClose").onclick=()=>$("#logbox").classList.remove("open");
+$("#status").onclick=()=>{if($("#log").children.length>1)$("#logbox").classList.toggle("open")};
+$("#bSave").onclick=save;
+$("#bLoad").onclick=()=>load(false);
+$("#bClear").onclick=()=>{
+  if(mode==="circ"){comps=[];wires=[];selC=null;selW=null;circLive()}
+  else{items=[];selId=null;draw();say("Masa temizlendi.")}
+};
+$("#bMode").onclick=()=>setMode(mode==="circ"?"mech":"circ");
+$("#bDemo").onclick=()=>{ // her basışta sıradaki örnek robot
+  demoI=(demoI+1)%DEMOS.length;
+  items=buildDemo(DEMOS[demoI].p); selId=null; comps=[]; wires=[]; selC=null; selW=null;
+  const tag="Örnek "+(demoI+1)+"/"+DEMOS.length+": "+DEMOS[demoI].n+". ";
+  if(mode==="circ"){demoCircuit();circLive();say(tag+"Anahtar, iki motor ve LED paralel bağlı. Anahtara dokun, kabloyu sil ya da yeniden çek.")}
+  else{draw();say(tag+"Test Et ile canlandır.")}
+};
+
+$("#bSnd").textContent=soundOn?"🔊":"🔇";
+$("#bSnd").onclick=()=>{
+  soundOn=!soundOn; store.set("hurda-ses",soundOn?"1":"0"); $("#bSnd").textContent=soundOn?"🔊":"🔇";
+  if(soundOn){audio();sfxTick();scapeSig="";setScape(lastAct,lastDt)}else stopScape();
+};
+showTab(curTab);
+if(window.ResizeObserver)new ResizeObserver(fit).observe($(".stagewrap"));else addEventListener("resize",fit);
+fit();
+if(!load(true))say("Tava ya da ayak koy, üstüne gövde ve kafa kur; parçalar birbirine değmeli. Sonra Test Et.");
+</script>
+</body>
+</html>
