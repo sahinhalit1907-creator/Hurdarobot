@@ -16,7 +16,7 @@ header{padding:6px}
 button{font:inherit;color:var(--tx);background:#2a3447;border:1px solid var(--ln);border-radius:8px;padding:8px 12px;cursor:pointer}
 button:hover{border-color:var(--ac)}
 button:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
-.btns button{flex:1;padding:8px 2px;font-size:12px}
+.btns button{flex:1;padding:8px 1px;font-size:11.5px}
 .go{background:var(--ac);border-color:var(--ac);color:#06222c;font-weight:700}
 .stagewrap{flex:1;min-height:0;position:relative}
 #stage{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
@@ -25,9 +25,9 @@ button:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
 .snd{position:absolute;top:8px;right:8px;z-index:3;width:36px;height:36px;padding:0;border-radius:50%;background:#171d27cc;font-size:16px}
 #status.ok{color:var(--ok)}#status.bad{color:var(--bd)}
 .tools{position:absolute;left:6px;right:6px;bottom:6px;z-index:2;display:flex;gap:4px}
-.tools button{flex:1;padding:7px 2px;font-size:13px;background:#171d27d9}
-.tabs{display:flex;gap:4px;padding:6px 6px 0;background:var(--pn);border-top:1px solid var(--ln)}
-.tabs button{flex:1;min-width:0;padding:6px 0;font-size:10px;letter-spacing:-.2px}
+.tools button{flex:1;min-width:0;padding:7px 1px;font-size:12px;background:#171d27d9}
+.tabs{display:flex;flex-wrap:wrap;gap:4px;padding:6px 6px 0;background:var(--pn);border-top:1px solid var(--ln)}
+.tabs button{flex:1 0 15%;min-width:0;padding:6px 0;font-size:10px;letter-spacing:-.2px}
 .tabs button.act{background:var(--ac);border-color:var(--ac);color:#06222c;font-weight:700}
 .inv{display:grid;grid-template-columns:repeat(6,1fr);grid-auto-rows:min-content;align-content:start;gap:4px;padding:6px;min-height:136px;background:var(--pn)}
 .inv h2{display:none}
@@ -66,6 +66,16 @@ button:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
 @keyframes shake{from{transform:translate(-1.2px,-.6px)}to{transform:translate(1.2px,.6px)}}
 @keyframes turn{from{transform:rotate(-35deg)}to{transform:rotate(35deg)}}
 @keyframes puff{0%{opacity:.75;transform:translate(0,0) scale(.6)}100%{opacity:0;transform:translate(-28px,-16px) scale(2.6)}}
+.spinf{animation:spin .22s linear infinite}
+.rotor{animation:rotor .1s linear infinite alternate}
+.flicker{transform-origin:50% 0;animation:flick .09s linear infinite alternate}
+.creep{animation:creep .07s linear infinite alternate}
+.flo{opacity:.2}
+#items.flying{animation:fly 1.5s ease-in-out infinite alternate}
+@keyframes rotor{from{transform:scaleX(1)}to{transform:scaleX(.12)}}
+@keyframes flick{from{transform:scaleY(.8)}to{transform:scaleY(1.3)}}
+@keyframes creep{from{transform:translateX(-1.2px)}to{transform:translateX(1.2px)}}
+@keyframes fly{to{transform:translateY(calc(var(--lift,0px)*-1))}}
 @keyframes drive{from{transform:translateX(calc(var(--dd)*-1))}to{transform:translateX(var(--dd))}}
 @keyframes glow{to{filter:brightness(1.4)}}
 .ghost{position:fixed;width:64px;pointer-events:none;transform:translate(-50%,-50%);z-index:9;opacity:.92}
@@ -93,6 +103,46 @@ body.circ .tools .cm{display:block}
 .cc.run{filter:drop-shadow(0 0 7px #35c8ff)}
 .clab{font:700 10px Arial,sans-serif;fill:#26303f;text-anchor:middle;paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round;pointer-events:none}
 @keyframes dash{to{stroke-dashoffset:-13}}
+#hud{position:absolute;left:8px;right:8px;top:50px;z-index:2;display:none;gap:8px;pointer-events:none}
+body.battle #hud{display:flex}
+body.battle #pad{display:grid}
+#pad{display:none;grid-template-columns:1fr 1fr;gap:8px;padding:8px;background:var(--pn);border-top:1px solid var(--ln);touch-action:none}
+#pad .pg{display:flex;gap:6px}
+#pad button{flex:1;min-height:50px;font-size:14px;touch-action:none;-webkit-tap-highlight-color:transparent}
+#pad button.dn,#pad button.act{background:var(--ac);color:#06222c;border-color:var(--ac)}
+#wbtn{grid-column:1/-1;order:3}
+.ht{align-self:center;font:800 18px Arial,sans-serif;color:#fff;text-shadow:0 1px 3px #000}
+.ib.hold .rig{animation:none!important}
+#fA.flash,#fB.flash{filter:brightness(1.7) drop-shadow(0 0 6px #ff4d4d)}
+#fA.blk,#fB.blk{filter:drop-shadow(0 0 6px #4dd2ff)}
+#fA.ko .fl,#fB.ko .fl{animation:ko 1s forwards}
+body.battle .tools,body.battle .tabs,body.battle .inv{display:none}
+body.battle .btns button:not(#bFight){opacity:.35;pointer-events:none}
+.hb{flex:1;min-width:0;background:#171d27d9;border-radius:10px;padding:4px 8px;font-size:12px;display:grid;grid-template-columns:1fr auto;gap:2px 6px}
+.hb b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hb .bar{grid-column:1/-1;height:8px;background:#2a3447;border-radius:6px;overflow:hidden}
+.bar i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#62d99a,#f2c14e);transition:width .35s}
+.botrow{display:flex;width:100%;align-items:center;gap:8px;margin-top:6px;text-align:left;flex-wrap:wrap}
+.botrow b{flex:1 1 40%}
+.fl{transform-box:fill-box;transform-origin:50% 100%}
+.fl.atk{animation:lunge .55s ease-out}
+.fl.hit{animation:hitk .4s}
+.fl.ko{animation:ko 1s forwards}
+.dmg{font:800 20px Arial,sans-serif;fill:#fff;stroke:#c93232;stroke-width:4px;paint-order:stroke;animation:rise 1s ease-out forwards;pointer-events:none}
+.dmg.crit{fill:#ffe48a;font-size:24px}
+.proj{fill:#2c323c;stroke:#fff;stroke-width:1.5;animation:shoot .43s linear forwards}
+.proj.fire{fill:#ff7a1a;stroke:#ffd95a}
+.boom{fill:#ffb347;transform-box:fill-box;transform-origin:center;animation:boomk .5s ease-out forwards}
+#stage.shake{animation:shk .25s}
+@keyframes lunge{0%{transform:translateX(0)}40%{transform:translateX(var(--lx,60px))}100%{transform:translateX(0)}}
+@keyframes hitk{0%,100%{transform:translateX(0);filter:none}30%{transform:translateX(calc(var(--lx,60px)*-.3));filter:drop-shadow(0 0 6px #ff3b3b) brightness(1.5)}}
+@keyframes ko{to{transform:rotate(var(--ka,-82deg)) translateY(6px);opacity:.55}}
+@keyframes rise{from{transform:translateY(0);opacity:1}to{transform:translateY(-40px);opacity:0}}
+@keyframes shoot{to{transform:translateX(var(--dx,100px))}}
+@keyframes boomk{from{transform:scale(.3);opacity:.9}to{transform:scale(2.4);opacity:0}}
+.pj{fill:#2c323c;stroke:#fff;stroke-width:1.5}
+.pj.fire{fill:#ff7a1a;stroke:#ffd95a}
+@keyframes shk{25%{transform:translate(3px,-2px)}75%{transform:translate(-3px,2px)}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important}}
 </style>
 </head>
@@ -128,6 +178,10 @@ body.circ .tools .cm{display:block}
 <linearGradient id="gGlass" x2="0" y2="1"><stop offset="0" stop-color="#d6f0fc"/><stop offset="1" stop-color="#5f93b5"/></linearGradient>
 <radialGradient id="gLamp" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#fff7d0"/><stop offset=".6" stop-color="#ffd95a"/><stop offset="1" stop-color="#b98a1a"/></radialGradient>
 <linearGradient id="gBox" x2="0" y2="1"><stop offset="0" stop-color="#86c862"/><stop offset="1" stop-color="#3f7a2a"/></linearGradient>
+<radialGradient id="gBlk" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#6a7382"/><stop offset=".5" stop-color="#1b1f26"/><stop offset="1" stop-color="#000"/></radialGradient>
+<linearGradient id="gCuv" href="#gCu" x2="0" y2="1"/>
+<linearGradient id="gGrip" x2="0" y2="1"><stop offset="0" stop-color="#b6c496"/><stop offset=".5" stop-color="#6a8a3a"/><stop offset="1" stop-color="#34471f"/></linearGradient>
+<linearGradient id="gGreenT" x2="0" y2="1"><stop offset="0" stop-color="#9ae8a6"/><stop offset="1" stop-color="#2f9a44"/></linearGradient>
 <filter id="sh" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="3" dy="4" stdDeviation="3" flood-color="#1d2430" flood-opacity=".4"/></filter>
 
 <symbol id="p-can" viewBox="0 0 70 92"><path d="M2 8V84Q35 96 68 84V8Z" fill="url(#gM)"/><path d="M2 24Q35 34 68 24M2 40Q35 50 68 40M2 56Q35 66 68 56M2 72Q35 82 68 72" fill="none" stroke="#586171" stroke-width="1.5"/><path d="M2 26Q35 36 68 26M2 42Q35 52 68 42M2 58Q35 68 68 58M2 74Q35 84 68 74" fill="none" stroke="#fff" stroke-opacity=".7"/><ellipse cx="35" cy="8" rx="33" ry="7" fill="url(#gD)" stroke="#6b7482"/><ellipse cx="35" cy="8" rx="25" ry="4.5" fill="none" stroke="#8c95a3"/></symbol>
@@ -199,12 +253,51 @@ body.circ .tools .cm{display:block}
 <symbol id="p-engine" viewBox="0 0 64 48"><rect x="4" y="14" width="56" height="30" rx="4" fill="url(#gMv)" stroke="#555e6d"/><g fill="url(#gM)" stroke="#555e6d"><rect x="10" y="4" width="10" height="14" rx="2"/><rect x="24" y="4" width="10" height="14" rx="2"/><rect x="38" y="4" width="10" height="14" rx="2"/></g><path d="M52 20H62" stroke="#a82a20" stroke-width="4" stroke-linecap="round"/><circle cx="46" cy="32" r="8" fill="url(#gD)" stroke="#555e6d"/><circle cx="46" cy="32" r="2.6" fill="#2c323c"/><path d="M8 20H40M8 26H34" stroke="#fff" stroke-opacity=".5" stroke-width="1.2"/></symbol>
 <symbol id="p-pipe" viewBox="0 0 64 16"><path d="M10 4H60V12H10Z" fill="url(#gMv)" stroke="#555e6d"/><path d="M2 2H12L10 14H2Z" fill="url(#gM)" stroke="#555e6d"/><ellipse cx="3" cy="8" rx="2" ry="6" fill="#20252e"/><path d="M14 6H56" stroke="#fff" stroke-opacity=".7" stroke-width="1.4"/></symbol>
 <symbol id="p-lamp" viewBox="0 0 26 26"><circle cx="13" cy="13" r="12" fill="url(#gD)" stroke="#555e6d"/><circle cx="13" cy="13" r="8" fill="url(#gLamp)" stroke="#8a6d1a"/><circle cx="10" cy="10" r="2.6" fill="#fff" opacity=".9"/></symbol>
+<symbol id="p-bignut" viewBox="0 0 64 60"><path d="M17 3H47L62 30L47 57H17L2 30Z" fill="url(#gD)" stroke="#4a5262" stroke-width="1.6"/><circle cx="32" cy="30" r="22" fill="none" stroke="#6b7482" stroke-opacity=".6"/><circle cx="32" cy="30" r="16" fill="#171a20"/><circle cx="32" cy="30" r="14" fill="none" stroke="#9aa3b2" stroke-width="3.2" stroke-dasharray="2 2.6"/><path d="M20 22A14 14 0 0 1 44 22" stroke="#e9edf3" stroke-width="2" fill="none" stroke-opacity=".8"/></symbol>
+<symbol id="p-drum" viewBox="0 0 112 62"><rect x="14" y="3" width="94" height="56" rx="6" fill="url(#gMv)" stroke="#555e6d"/><ellipse cx="22" cy="31" rx="14" ry="28" fill="url(#gD)" stroke="#555e6d"/><ellipse cx="22" cy="31" rx="9" ry="20" fill="none" stroke="#8c95a3"/><path d="M30 6V56M96 6V56" stroke="#4a5262" stroke-width="1.6"/><circle cx="22" cy="12" r="1.8" fill="#4a5262"/><circle cx="22" cy="50" r="1.8" fill="#4a5262"/></symbol>
+<symbol id="p-cdrum" viewBox="0 0 104 56"><rect x="14" y="3" width="86" height="50" rx="6" fill="url(#gCuv)" stroke="#5a3322"/><ellipse cx="22" cy="28" rx="13" ry="25" fill="url(#gBr)" stroke="#5a3322"/><ellipse cx="22" cy="28" rx="8" ry="17" fill="none" stroke="#7a4a2a"/><path d="M32 6V50M90 6V50" stroke="#5a3322" stroke-width="1.6"/></symbol>
+<symbol id="p-tail" viewBox="0 0 36 70"><path d="M5 68C5 40 10 22 28 10" fill="none" stroke="#2c323c" stroke-width="6" stroke-linecap="round"/><path d="M5 68C5 40 10 22 28 10" fill="none" stroke="url(#gM)" stroke-width="4" stroke-linecap="round"/><path d="M26 11L32 6" stroke="#0d0f14" stroke-width="7" stroke-linecap="round"/></symbol>
+<symbol id="p-foot" viewBox="0 0 34 16"><ellipse cx="17" cy="9" rx="15" ry="6" fill="url(#gF)" stroke="#6b7482"/><ellipse cx="17" cy="7" rx="13" ry="4" fill="#fff" opacity=".35"/><circle cx="17" cy="8" r="2.2" fill="#6b7482"/></symbol>
+<symbol id="p-hoof" viewBox="0 0 28 30"><path d="M3 6Q3 2 8 2H20Q25 2 25 6V24Q25 28 20 28H8Q3 28 3 24Z" fill="url(#gM)" stroke="#555e6d"/><ellipse cx="14" cy="4" rx="10" ry="3" fill="url(#gD)" stroke="#555e6d"/><path d="M6 10V24" stroke="#fff" stroke-opacity=".7" stroke-width="2"/></symbol>
+<symbol id="p-tube" viewBox="0 0 28 90"><rect x="3" y="2" width="22" height="86" rx="3" fill="url(#gM)" stroke="#555e6d"/><ellipse cx="14" cy="4" rx="11" ry="3" fill="url(#gD)" stroke="#555e6d"/><path d="M3 18H25M3 70H25" stroke="#4a5262" stroke-width="1.6"/><path d="M8 10V84" stroke="#fff" stroke-opacity=".6" stroke-width="2"/></symbol>
+<symbol id="p-horn" viewBox="0 0 24 80"><path d="M4 78L10 4Q12 0 14 4L20 78Z" fill="url(#gB)" stroke="#6e5420"/><path d="M8 70L12 12" stroke="#fff" stroke-opacity=".6" stroke-width="2.4" stroke-linecap="round"/><path d="M6 58H18M7 44H17M8 30H16" stroke="#6e5420" stroke-opacity=".5"/></symbol>
+<symbol id="p-nail" viewBox="0 0 8 62"><rect x="3.2" y="8" width="1.6" height="52" fill="url(#gM)"/><path d="M3.2 60L4 62L4.8 60Z" fill="#555e6d"/><ellipse cx="4" cy="4" rx="3.6" ry="2.6" fill="url(#gF)" stroke="#6b7482" stroke-width=".8"/></symbol>
+<symbol id="p-wing" viewBox="0 0 44 110"><path d="M6 106L2 24Q4 6 22 2Q40 6 42 24L38 106Q22 112 6 106Z" fill="url(#gB)" stroke="#6e5420"/><path d="M6 100L22 90L38 100M5 76L22 66L39 76M4 52L22 42L40 52M4 30L22 20L40 30" fill="none" stroke="#7a5a18" stroke-width="2.4"/><path d="M10 96L12 20" stroke="#fff" stroke-opacity=".5" stroke-width="2.4" stroke-linecap="round"/></symbol>
+<symbol id="p-elytra" viewBox="0 0 80 90"><path d="M8 84Q2 40 24 12Q44 -2 68 20Q80 46 70 84Q40 94 8 84Z" fill="url(#gBr)" stroke="#6e5420"/><path d="M20 76Q14 44 30 22" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="3" stroke-linecap="round"/><path d="M26 82Q50 90 66 80" fill="none" stroke="#6e5420" stroke-opacity=".5" stroke-width="2"/></symbol>
+<symbol id="p-claw" viewBox="0 0 60 70"><path d="M22 68L14 40Q4 20 8 4Q16 16 24 34L28 36L30 34Q40 14 52 6Q54 22 44 42L38 68Z" fill="url(#gF)" stroke="#6b7482"/><circle cx="30" cy="54" r="7" fill="url(#gD)" stroke="#555e6d"/><circle cx="30" cy="54" r="2.4" fill="#2c323c"/><path d="M12 12Q18 30 24 40" stroke="#fff" stroke-opacity=".7" stroke-width="2" fill="none"/></symbol>
+<symbol id="p-watch" viewBox="0 0 56 56"><circle cx="28" cy="28" r="26" fill="url(#gB)" stroke="#6e5420"/><circle cx="28" cy="28" r="21" fill="#2a2418" stroke="#c9a840"/><g fill="none" stroke="#d9c27a" stroke-width="1.6"><circle cx="20" cy="24" r="9" stroke-dasharray="2.4 1.8"/><circle cx="36" cy="32" r="7" stroke-dasharray="2.2 1.8"/><circle cx="28" cy="40" r="5" stroke-dasharray="2 1.6"/></g><circle cx="20" cy="24" r="2" fill="#c9503a"/><circle cx="36" cy="32" r="1.8" fill="#c9503a"/><circle cx="28" cy="40" r="1.6" fill="#c9503a"/><path d="M10 18Q16 8 28 7" stroke="#fff" stroke-opacity=".5" stroke-width="2.4" fill="none" stroke-linecap="round"/></symbol>
+<symbol id="p-bball" viewBox="0 0 56 56"><circle cx="28" cy="28" r="26" fill="url(#gBlk)" stroke="#000"/><ellipse cx="19" cy="15" rx="10" ry="6" fill="#fff" opacity=".35" transform="rotate(-30 19 15)"/></symbol>
+<symbol id="p-bleg" viewBox="0 0 18 100"><rect x="5" y="2" width="8" height="30" rx="3" fill="url(#gB)" stroke="#6e5420"/><rect x="5" y="34" width="8" height="30" rx="3" fill="url(#gM)" stroke="#555e6d"/><rect x="5" y="66" width="8" height="30" rx="3" fill="url(#gB)" stroke="#6e5420"/><g fill="url(#gD)" stroke="#555e6d"><circle cx="9" cy="33" r="4.4"/><circle cx="9" cy="65" r="4.4"/></g><path d="M9 96V99" stroke="#555e6d" stroke-width="3" stroke-linecap="round"/></symbol>
+<symbol id="p-chainwheel" viewBox="0 0 56 56"><circle cx="28" cy="28" r="26" fill="none" stroke="#2c323c" stroke-width="7"/><circle cx="28" cy="28" r="26" fill="none" stroke="url(#gCu)" stroke-width="5" stroke-dasharray="5.6 2.4"/><circle cx="28" cy="28" r="20" fill="url(#gM)" stroke="#555e6d"/><circle cx="28" cy="28" r="13" fill="#20252e" stroke="#9aa3b2" stroke-width="2"/><circle cx="28" cy="28" r="13" fill="none" stroke="#c9cfda" stroke-width="3" stroke-dasharray="2 2.6"/><circle cx="28" cy="28" r="5" fill="url(#gD)" stroke="#555e6d"/></symbol>
+<symbol id="p-bearing" viewBox="0 0 56 56"><circle cx="28" cy="28" r="26" fill="url(#gD)" stroke="#3a414d" stroke-width="1.6"/><circle cx="28" cy="28" r="20" fill="#1a1d23" stroke="#8c95a3"/><circle cx="28" cy="28" r="15" fill="none" stroke="#c9cfda" stroke-width="5" stroke-dasharray="4.5 3"/><circle cx="28" cy="28" r="10" fill="url(#gM)" stroke="#555e6d"/><circle cx="28" cy="28" r="6" fill="#14171d"/></symbol>
+<symbol id="p-track" viewBox="0 0 132 44"><rect x="2" y="2" width="128" height="40" rx="20" fill="none" stroke="#1d2128" stroke-width="7"/><rect x="2" y="2" width="128" height="40" rx="20" fill="none" stroke="url(#gM)" stroke-width="5" stroke-dasharray="7 3"/><g fill="url(#gD)" stroke="#555e6d"><circle cx="24" cy="22" r="11"/><circle cx="66" cy="22" r="9"/><circle cx="108" cy="22" r="11"/></g><g fill="#20252e"><circle cx="24" cy="22" r="4"/><circle cx="66" cy="22" r="3.4"/><circle cx="108" cy="22" r="4"/></g></symbol>
+<symbol id="p-fueltank" viewBox="0 0 70 40"><path d="M3 30Q2 10 18 6Q40 -2 62 8Q68 14 66 28Q40 38 3 30Z" fill="url(#gCar)" stroke="#5a1511"/><path d="M14 28Q22 14 30 22Q36 10 46 16Q52 14 56 22Q40 30 14 28Z" fill="#14171d"/><path d="M10 14Q22 6 40 8" stroke="#fff" stroke-opacity=".6" stroke-width="2.4" fill="none" stroke-linecap="round"/><rect x="30" y="1" width="9" height="5" rx="2" fill="url(#gM)" stroke="#555e6d"/></symbol>
+<symbol id="p-hull" viewBox="0 0 120 44"><path d="M2 40L16 8H104L118 40Z" fill="url(#gMv)" stroke="#3a414d"/><path d="M20 12H100" stroke="#fff" stroke-opacity=".6" stroke-width="2.4" stroke-linecap="round"/><g fill="url(#gD)" stroke="#555e6d"><circle cx="24" cy="26" r="3.4"/><circle cx="96" cy="26" r="3.4"/></g></symbol>
+<symbol id="p-cannon" viewBox="0 0 88 20"><rect x="2" y="4" width="70" height="12" rx="2" fill="url(#gMv)" stroke="#3a414d"/><rect x="68" y="1" width="18" height="18" rx="3" fill="url(#gMv)" stroke="#3a414d"/><path d="M6 7H66" stroke="#fff" stroke-opacity=".7" stroke-width="2"/></symbol>
+<symbol id="p-bar" viewBox="0 0 60 26"><path d="M4 22Q8 6 22 6H38Q52 6 56 22" fill="none" stroke="#2c323c" stroke-width="5" stroke-linecap="round"/><path d="M4 22Q8 6 22 6H38Q52 6 56 22" fill="none" stroke="url(#gM)" stroke-width="3" stroke-linecap="round"/><rect x="0" y="18" width="12" height="7" rx="3" fill="url(#gK)"/><rect x="48" y="18" width="12" height="7" rx="3" fill="url(#gK)"/></symbol>
+<symbol id="p-plate" viewBox="0 0 150 14"><rect x="1" y="2" width="148" height="10" rx="1.5" fill="url(#gMv)" stroke="#555e6d"/><path d="M8 3L14 7L8 11M22 3L28 7L22 11M36 3L42 7L36 11M50 3L56 7L50 11M64 3L70 7L64 11M78 3L84 7L78 11M92 3L98 7L92 11M106 3L112 7L106 11M120 3L126 7L120 11M134 3L140 7L134 11" stroke="#6b7482" fill="none"/></symbol>
+<symbol id="p-fuselage" viewBox="0 0 140 36"><path d="M4 14L40 10H100Q124 12 138 24Q120 32 96 32H30L4 22Z" fill="url(#gMv)" stroke="#555e6d"/><path d="M40 14H100Q114 15 128 22" stroke="#fff" stroke-opacity=".7" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M8 14L2 2L22 10Z" fill="url(#gM)" stroke="#555e6d"/></symbol>
+<symbol id="p-rbody" viewBox="0 0 56 110"><rect x="2" y="2" width="52" height="106" rx="4" fill="url(#gM)" stroke="#555e6d"/><g fill="#fff" opacity=".35"><circle cx="14" cy="16" r="3"/><circle cx="30" cy="30" r="3.4"/><circle cx="44" cy="14" r="2.6"/><circle cx="18" cy="48" r="3.2"/><circle cx="40" cy="60" r="3"/><circle cx="12" cy="78" r="3"/><circle cx="32" cy="92" r="3.4"/><circle cx="46" cy="84" r="2.6"/></g><path d="M2 100H54" stroke="#4a5262" stroke-width="3"/></symbol>
+<symbol id="p-rcone" viewBox="0 0 56 44"><path d="M2 42Q6 18 28 2Q50 18 54 42Z" fill="url(#gCar)" stroke="#5a1511"/><path d="M2 42H54" stroke="#f4e7cf" stroke-width="4"/><g fill="#e9edf3"><circle cx="18" cy="30" r="2.6"/><circle cx="38" cy="30" r="2.6"/><circle cx="28" cy="18" r="2.2"/></g></symbol>
+<symbol id="p-rfin" viewBox="0 0 36 64"><path d="M4 62L8 22Q14 6 32 2L30 40Q28 56 4 62Z" fill="url(#gBu)" stroke="#0c2644"/><circle cx="18" cy="34" r="3" fill="#e9edf3"/><path d="M10 54L12 28" stroke="#fff" stroke-opacity=".35" stroke-width="2.4" fill="none"/></symbol>
+<symbol id="p-flame" viewBox="0 0 30 54"><path d="M15 52C2 40 4 22 15 2C26 22 28 40 15 52Z" fill="#ff7a1a"/><path d="M15 46C8 38 9 26 15 14C21 26 22 38 15 46Z" fill="#ffd95a"/><path d="M15 38C12 33 13 28 15 22C17 28 18 33 15 38Z" fill="#fff7d0"/></symbol>
+<symbol id="p-prop" viewBox="0 0 72 72"><g transform="rotate(35 36 36)"><rect x="30" y="2" width="12" height="68" rx="5" fill="url(#gH)" stroke="#4a3520"/></g><g transform="rotate(125 36 36)"><rect x="30" y="2" width="12" height="68" rx="5" fill="url(#gH)" stroke="#4a3520"/></g><circle cx="36" cy="36" r="7" fill="url(#gM)" stroke="#555e6d"/><circle cx="36" cy="36" r="2.4" fill="#2c323c"/></symbol>
+<symbol id="p-rotor" viewBox="0 0 130 12"><path d="M2 6Q20 0 65 2Q110 0 128 6Q110 11 65 10Q20 12 2 6Z" fill="url(#gBox)" stroke="#1f6a2a"/><circle cx="65" cy="6" r="5" fill="url(#gM)" stroke="#555e6d"/></symbol>
+<symbol id="p-pet" viewBox="0 0 90 60"><path d="M8 52Q2 40 6 22Q12 6 34 6H62Q86 8 88 30V50Q86 56 78 56H14Q10 56 8 52Z" fill="url(#gGreenT)" fill-opacity=".8" stroke="#1f7a3a"/><path d="M16 14Q26 10 40 10" stroke="#fff" stroke-opacity=".7" stroke-width="3" fill="none" stroke-linecap="round"/><rect x="2" y="26" width="10" height="22" rx="2" fill="#e8e8e8" opacity=".9"/></symbol>
+<symbol id="p-boom" viewBox="0 0 26 120"><rect x="3" y="2" width="20" height="116" rx="3" fill="url(#gM)" stroke="#555e6d"/><path d="M8 6V114" stroke="#fff" stroke-opacity=".6" stroke-width="2.4"/><g fill="url(#gD)" stroke="#555e6d"><circle cx="13" cy="10" r="3.6"/><circle cx="13" cy="110" r="3.6"/></g></symbol>
+<symbol id="p-bucket" viewBox="0 0 70 60"><path d="M4 8H64L68 52H2Z" fill="url(#gMv)" stroke="#3a414d"/><path d="M2 52H68L66 58H4Z" fill="url(#gM)" stroke="#3a414d"/><path d="M10 14H60" stroke="#fff" stroke-opacity=".6" stroke-width="2.4"/><circle cx="12" cy="12" r="3.4" fill="url(#gD)" stroke="#555e6d"/></symbol>
+<symbol id="p-fin" viewBox="0 0 50 70"><path d="M46 36L6 2L14 30L4 36L14 42L6 68Z" fill="url(#gCu)" stroke="#5a3322"/><circle cx="14" cy="36" r="4" fill="url(#gD)" stroke="#555e6d"/><circle cx="30" cy="20" r="2.4" fill="#5a3322"/><circle cx="30" cy="52" r="2.4" fill="#5a3322"/></symbol>
+<symbol id="p-jaw" viewBox="0 0 60 30"><path d="M2 8H52L58 16L50 28H8Q2 28 2 22Z" fill="url(#gM)" stroke="#555e6d"/><path d="M10 8L14 3L18 8M22 8L26 3L30 8M34 8L38 3L42 8" fill="#1a1d23"/><circle cx="10" cy="18" r="3.4" fill="url(#gB)" stroke="#6e5420"/></symbol>
+<symbol id="p-vgrip" viewBox="0 0 150 36"><path d="M2 12Q2 6 10 6H100Q128 4 146 18Q148 24 140 26L112 30H14Q2 30 2 24Z" fill="url(#gGrip)" stroke="#2f4a1f"/><path d="M122 18L146 20M124 23L144 25" stroke="#2c323c" stroke-width="3"/><circle cx="96" cy="14" r="6" fill="url(#gM)" stroke="#555e6d"/><path d="M12 10H92" stroke="#fff" stroke-opacity=".4" stroke-width="2"/></symbol>
+<symbol id="p-elbow" viewBox="0 0 36 72"><path d="M6 2V34Q6 44 16 44H26V70" fill="none" stroke="#0d0f14" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 2V34Q6 44 16 44H26V70" fill="none" stroke="#4a5262" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 8V32" stroke="#fff" stroke-opacity=".35" stroke-width="1.6"/></symbol>
+<symbol id="p-gearwheel" viewBox="0 0 40 40"><use href="#p-gear" width="40" height="40"/></symbol>
 </defs></svg>
 
 <div class="app">
   <header>
     <div class="btns">
       <button id="bMode">Devre</button>
+      <button id="bFight">Savaş</button>
       <button class="go" id="bTest">Test Et</button>
       <button id="bDemo">Örnek</button>
       <button id="bSave">Kaydet</button>
@@ -219,18 +312,21 @@ body.circ .tools .cm{display:block}
       <rect id="fl2" y="486" width="400" height="2" fill="#fff" opacity=".35"/>
       <g id="items"></g>
       <g id="circ" style="display:none"></g>
+      <g id="arena" style="display:none"></g>
     </svg>
     <div id="status" role="status"></div>
+    <div id="hud"><div class="hb"><b id="hnA"></b><span id="hvA"></span><div class="bar"><i id="hpA"></i></div></div><div id="htm" class="ht"></div><div class="hb"><b id="hnB"></b><span id="hvB"></span><div class="bar"><i id="hpB"></i></div></div></div>
     <button id="bSnd" class="snd" title="Sesi aç ya da kapat" aria-label="Ses">🔊</button>
     <div class="tools" id="tools">
       <button data-a="rotL" title="Sola çevir">Sola</button><button data-a="rotR" title="Sağa çevir">Sağa</button>
       <button data-a="big">Büyüt</button><button data-a="small">Küçült</button>
-      <button data-a="copy" title="Kopyala">Kopya</button><button data-a="front" title="Öne al">Öne</button><button data-a="del">Sil</button>
+      <button data-a="copy" title="Kopyala">Kopya</button><button data-a="front" title="Öne al">Öne</button><button data-a="back" title="Arkaya al">Arka</button><button data-a="del">Sil</button>
       <button class="cm" data-ca="drive" title="Motorun hangi bölümü oynatacağını değiştir">Bağla</button><button class="cm" data-ca="del">Sil</button><button class="cm" data-ca="wires" title="Tüm kabloları sil">Kablo sil</button>
     </div>
   </div>
   <div class="tabs" id="tabs"></div>
   <div class="inv" id="inv"></div>
+  <div id="pad"><div class="pg"><button data-k="left">◀</button><button data-k="right">▶</button><button data-k="jump">Zıpla</button></div><div class="pg" id="wbtn"></div><div class="pg"><button data-k="block">Blok</button><button data-k="auto">Oto</button></div></div>
 </div>
 <div class="log" id="logbox"><button class="close" id="bClose">Kapat</button><div id="log"></div></div>
 
@@ -282,7 +378,7 @@ const PARTS={
   stick:{g:"Alet",n:"Çubuk",w:10,h:120,m:.6,v:2},
   rod:{g:"Alet",n:"Dişli çubuk",w:18,h:110,m:1,v:3},
   hose:{g:"Alet",n:"Hortum",w:34,h:100,m:1,v:4},
-  hook:{g:"Alet",n:"Kuyruk teli",w:44,h:92,m:.5,v:3},
+  hook:{g:"Alet",n:"Kuyruk teli",w:44,h:92,m:.5,v:3,jp:[-16,-42]},
   chain:{g:"Alet",n:"Zincir",w:20,h:84,m:1,v:4},
   // Bağlantı parçaları
   bolt:{g:"Detay",n:"Cıvata",w:64,h:18,m:.6,v:2},
@@ -314,7 +410,47 @@ const PARTS={
   fender:{g:"Kasa",n:"Çamurluk",w:56,h:26,m:1,v:3},
   bumper:{g:"Kasa",n:"Tampon",w:74,h:14,m:1,v:3},
   grille:{g:"Kasa",n:"Izgara",w:36,h:30,m:.8,v:3},
-  spoiler:{g:"Kasa",n:"Spoyler",w:60,h:24,m:.8,v:3}
+  spoiler:{g:"Kasa",n:"Spoyler",w:60,h:24,m:.8,v:3},
+  // Somun hayvanları, böcekler ve örümcekler
+  bignut:{g:"Gövde",n:"Büyük somun",w:64,h:60,m:4,v:8},
+  drum:{g:"Gövde",n:"Çelik varil",w:112,h:62,m:5,v:10},
+  cdrum:{g:"Gövde",n:"Bakır varil",w:104,h:56,m:5,v:11},
+  watch:{g:"Gövde",n:"Saat gövde",w:56,h:56,m:2.5,v:12},
+  foot:{g:"Taban",n:"Ayak plakası",w:34,h:16,m:.3,v:1},
+  hoof:{g:"Taban",n:"Toynak",w:28,h:30,m:.8,v:3},
+  horn:{g:"Kafa",n:"Boynuz",w:24,h:80,m:.6,v:3},
+  tube:{g:"Alet",n:"Boru",w:28,h:90,m:1.2,v:4},
+  tail:{g:"Alet",n:"Kıvrık kuyruk",w:36,h:70,m:.5,v:3,jp:[-13,33]},
+  nail:{g:"Alet",n:"Çivi",w:8,h:62,m:.2,v:1},
+  bball:{g:"Süs",n:"Siyah küre",w:56,h:56,m:3,v:9},
+  wing:{g:"Süs",n:"Pirinç kanat",w:44,h:110,m:.8,v:5},
+  elytra:{g:"Süs",n:"Kabuk kanat",w:80,h:90,m:2,v:7},
+  claw:{g:"Süs",n:"Pençe",w:60,h:70,m:1.5,v:6},
+  bleg:{g:"Süs",n:"Eklemli bacak",w:18,h:100,m:.6,v:4},
+  // Araçlar, uçaklar ve özel yapılar
+  chainwheel:{g:"Araç",n:"Zincir teker",w:56,h:56,m:1.5,v:6},
+  bearing:{g:"Araç",n:"Rulman teker",w:56,h:56,m:1.5,v:6},
+  track:{g:"Araç",n:"Palet",w:132,h:44,m:3,v:9},
+  fueltank:{g:"Araç",n:"Depo",w:70,h:40,m:3,v:8},
+  hull:{g:"Kasa",n:"Zırh gövde",w:120,h:44,m:4,v:8},
+  cannon:{g:"Kasa",n:"Top namlusu",w:88,h:20,m:2,v:6},
+  bar:{g:"Kasa",n:"Gidon",w:60,h:26,m:.5,v:3},
+  plate:{g:"Hava",n:"Saç kanat",w:150,h:14,m:1.5,v:5},
+  fuselage:{g:"Hava",n:"Uçak gövdesi",w:140,h:36,m:3,v:10},
+  rbody:{g:"Hava",n:"Roket gövde",w:56,h:110,m:3,v:9},
+  rcone:{g:"Hava",n:"Roket burnu",w:56,h:44,m:1,v:4},
+  rfin:{g:"Hava",n:"Kuyruk kanadı",w:36,h:64,m:.8,v:4},
+  flame:{g:"Hava",n:"Alev",w:30,h:54,m:.1,v:1},
+  prop:{g:"Hava",n:"Pervane",w:72,h:72,m:.5,v:4},
+  rotor:{g:"Hava",n:"Rotor",w:130,h:12,m:.6,v:4},
+  pet:{g:"Hava",n:"Yeşil şişe",w:90,h:60,m:1.5,v:6},
+  boom:{g:"Özel",n:"Kepçe kolu",w:26,h:120,m:1.5,v:5},
+  bucket:{g:"Özel",n:"Kepçe",w:70,h:60,m:2,v:6},
+  fin:{g:"Özel",n:"Kuyruk yüzgeci",w:50,h:70,m:.8,v:4,jp:[21,1]},
+  jaw:{g:"Özel",n:"Alt çene",w:60,h:30,m:1,v:4,jp:[-20,3]},
+  vgrip:{g:"Özel",n:"Kerpeten",w:150,h:36,m:4,v:9},
+  elbow:{g:"Özel",n:"Dirsek bacak",w:36,h:72,m:.6,v:4},
+  gearwheel:{g:"Özel",n:"Dişli teker",w:64,h:64,m:1.5,v:6}
 };
 const known=k=>Object.hasOwn(PARTS,k);
 let items=[], nid=1, selId=null, arm=null;
@@ -327,6 +463,30 @@ function hext(i){ // döndürülmüş parçanın yarı genişlik/yüksekliği
 }
 const touch=(a,b,t=6)=>{const A=hext(a),B=hext(b);return Math.abs(a.x-b.x)<=A.hx+B.hx+t&&Math.abs(a.y-b.y)<=A.hy+B.hy+t};
 const nbrs=i=>items.filter(o=>o!==i&&touch(i,o));
+function jointOf(o,tor){ // eklem noktası = uzvun gövdeyle temas eden bölgesinin merkezi
+  const p=PARTS[o.t], a=o.r*Math.PI/180, c=Math.cos(a), s=Math.sin(a);
+  if(p.jp)return [o.x+(p.jp[0]*c-p.jp[1]*s)*o.s, o.y+(p.jp[0]*s+p.jp[1]*c)*o.s]; // eklem noktası belli parçalar (kuyruk)
+  const gap=(x,y)=>Math.min(...tor.map(b=>{const B=hext(b);return Math.hypot(Math.max(0,Math.abs(x-b.x)-B.hx),Math.max(0,Math.abs(y-b.y)-B.hy))}));
+  const pts=[]; let m=1e9;
+  for(let i=-4;i<=4;i++)for(let j=-4;j<=4;j++){ // parçanın döndürülmüş dikdörtgenini tara
+    const lx=p.w*o.s/2*i/4, ly=p.h*o.s/2*j/4, x=o.x+lx*c-ly*s, y=o.y+lx*s+ly*c, g=gap(x,y);
+    pts.push([x,y,g]); if(g<m)m=g;
+  }
+  const near=pts.filter(q=>q[2]<=m+1);
+  return [near.reduce((u,q)=>u+q[0],0)/near.length, near.reduce((u,q)=>u+q[1],0)/near.length];
+}
+function snap(i){ // bırakılan parça hiçbir şeye değmiyorsa yakındaki parçaya yapışır (mıknatıs)
+  if(nbrs(i).length)return;
+  const A=hext(i); let best=null, bd=28;
+  for(const o of items){
+    if(o===i)continue;
+    const B=hext(o), gx=Math.max(0,Math.abs(i.x-o.x)-A.hx-B.hx), gy=Math.max(0,Math.abs(i.y-o.y)-A.hy-B.hy), d=Math.hypot(gx,gy);
+    if(d<bd){bd=d;best={o,gx,gy}}
+  }
+  if(!best)return;
+  if(best.gx>0)i.x+=(best.o.x>i.x?1:-1)*(best.gx+4);
+  if(best.gy>0)i.y+=(best.o.y>i.y?1:-1)*(best.gy+4);
+}
 function settle(i){ // tuvalin içinde kal, zemine yakınsa zemine otur
   const {hx,hy}=hext(i);
   i.x=Math.round(Math.min(VW-hx,Math.max(hx,i.x))); i.y=Math.round(Math.max(hy,i.y));
@@ -339,11 +499,11 @@ function settle(i){ // tuvalin içinde kal, zemine yakınsa zemine otur
 let power=true;
 
 /* ========== 4) SANAT PUANI ========== */
-const BODY=["can","bcan","soda","tuna","spice","bottle","cube","ball","shell","cab","box"], BASE=["pan","plank","disc","woodbox"];      // gövde olabilenler, taban olanlar
+const BODY=["can","bcan","soda","tuna","spice","bottle","cube","ball","shell","cab","box","bignut","drum","cdrum","watch","hull","fuselage","rbody","pet","vgrip","fueltank"], BASE=["pan","plank","disc","woodbox"];      // gövde olabilenler, taban olanlar
 const HEAD=[...BODY,"bowl","lid","bulb","block"], HEADS=()=>items.filter(i=>HEAD.includes(i.t));
-const LIMB=["fork","spoon","chain","knife","ladle","whisk","wrench","hammer","driver","pliers","spatula","masher","stick","rod","hose","hook","domino"];
+const LIMB=["fork","spoon","chain","knife","ladle","whisk","wrench","hammer","driver","pliers","spatula","masher","stick","rod","hose","hook","domino","wing","elytra","claw","bleg","tail","cannon","boom","bucket","elbow","jaw","fin"];
 const TOOLS=["wrench","hammer","driver","knife","ladle","whisk","pliers"];
-const WHEELS=["wheel","tire"]; // dönerek aracı sürer
+const WHEELS=["wheel","tire","chainwheel","bearing","track","gearwheel"]; // dönerek aracı sürer
 const BODYS=()=>items.filter(i=>BODY.includes(i.t)), BASEPARTS=()=>items.filter(i=>BASE.includes(i.t));
 const isLimb=o=>LIMB.includes(o.t)||(o.t==="cap"&&nbrs(o).some(n=>n.t==="cap")); // kapak dizisi de uzuv olur
 function capChain(){ // birbirine değen en büyük kapak grubu
@@ -381,7 +541,7 @@ function artScore(out){
   const kinds=new Set(art.map(i=>i.t)).size, vp=Math.min(6,kinds)*5;
   s+=vp; out.push(["ok","🎨 Çeşitlilik: "+kinds+" farklı hurda türü (+"+vp+")"]);
   const top=Math.min(...art.map(i=>i.y-hext(i).hy));
-  if(items.filter(o=>WHEELS.includes(o.t)).length>=2&&!items.some(o=>["spoon","rod","domino"].includes(o.t))){s+=10;out.push(["ok","🎨 Araç: tekerlekler ve gövde bir arada (+10)"])}
+  if(items.some(o=>["prop","rotor","flame"].includes(o.t))||(items.filter(o=>WHEELS.includes(o.t)).length>=2&&!items.some(o=>["spoon","domino","elbow","bowl","eye"].includes(o.t)))){s+=10;out.push(["ok","🎨 Araç ya da hava aracı: parçalar bir arada (+10)"])}
   else if(art.some(i=>HEAD.includes(i.t)&&i.y<top+(Math.max(...art.map(j=>j.y+hext(j).hy))-top)*.4)){s+=10;out.push(["ok","🎨 Kafa: en üstte kevgir ya da konserve var (+10)"])}
   else out.push(["warn","🎨 Kafa yok: en üste kevgir ya da konserve koy."]);
   const symAt=ax=>art.filter(i=>art.some(o=>o.t===i.t&&Math.abs(o.x-(2*ax-i.x))<22&&Math.abs(o.y-i.y)<26)).length/art.length;
@@ -398,17 +558,21 @@ function artScore(out){
 // Parçalara rolü yapıdan atanır: gövde (konserve) merkez alınır, ona değen dallar
 // konumlarına göre kafa/boyun, kol veya bacak olur. Her dal kendi eklem noktasından oynar.
 function buildRig0(){
-  const plan=new Map(), R={head:[],neck:[],eye:[],mouth:[],ear:[],arm:[],leg:[],skirt:[],hat:[],gear:[],tail:[],wheel:[],engine:[],steer:[]}, cans=BODYS();
+  const plan=new Map(), R={head:[],neck:[],eye:[],mouth:[],ear:[],arm:[],leg:[],skirt:[],hat:[],gear:[],tail:[],wheel:[],engine:[],steer:[],prop:[]}, cans=BODYS();
   if(!cans.length)return {plan,R,body:null};
   const heads=HEADS().sort((a,b)=>a.y-b.y);
   let head=heads[0], pool=cans.filter(c=>c!==head);
   if(!pool.length){pool=cans.slice();head=heads.find(h=>!BODY.includes(h.t)&&h.y<pool[0].y)||null}
+  const ar=a=>PARTS[a.t].w*PARTS[a.t].h*a.s*a.s;
+  if(head&&BODY.includes(head.t)&&pool.length&&ar(head)>1.25*Math.max(...pool.map(ar))){ // gövdeden çok büyük gövde türü parça (kabin) kafa sayılmaz
+    const big=head; pool.push(big); head=heads.find(h=>!BODY.includes(h.t)&&h.y<big.y)||null;
+  }
   const body=pool.reduce((a,b)=>nbrs(b).length>nbrs(a).length?b:a);
   if(head&&head.y>=body.y)head=null;
   // gövde: üst üste konserveler ve etek (kek kalıbı) gövdeye katılır
   const torso=new Set([body]);
   for(let g=true;g;){g=false;for(const o of items)
-    if(!torso.has(o)&&o!==head&&(BODY.includes(o.t)||o.t==="tin")&&[...torso].some(x=>touch(o,x)&&Math.abs(o.x-x.x)<hext(x).hx*.6)){torso.add(o);g=true}}
+    if(!torso.has(o)&&o!==head&&(BODY.includes(o.t)||o.t==="tin")&&[...torso].some(x=>touch(o,x)&&(BODY.includes(o.t)||Math.abs(o.x-x.x)<hext(x).hx*.6))){torso.add(o);g=true}}
   const seen=new Set([...torso,...BASEPARTS()]); // tava taban, hareket etmez
   const branch=r=>{const g=[r],q=[r];seen.add(r);while(q.length){const a=q.shift();for(const b of nbrs(a))if(!seen.has(b)&&!RS.has(b)){seen.add(b);g.push(b);q.push(b)}}return g};
   const onTorso=o=>[...torso].some(x=>touch(o,x));
@@ -421,7 +585,7 @@ function buildRig0(){
 
   // kafa dalı: boyun yayı varsa onun ucundan, yoksa kafanın altından yalpalar
   if(head){
-    const neck=items.find(o=>o.t==="spring"&&!seen.has(o)&&o.y>head.y&&touch(o,head)&&onTorso(o));
+    const neck=items.find(o=>["spring","tube","rod"].includes(o.t)&&!seen.has(o)&&o.y>head.y&&touch(o,head)&&onTorso(o));
     let g,ox,oy;
     if(neck){g=branch(neck).filter(o=>o!==neck);set(neck,{loc:"boing"});R.neck.push(neck);ox=neck.x;oy=neck.y-hext(neck).hy}
     else{g=branch(head);ox=head.x;oy=head.y+hext(head).hy}
@@ -434,7 +598,7 @@ function buildRig0(){
       if(o.t==="tab"||(dy>.15&&Math.abs(dx)<.5&&["bolt","cap","washer","nut"].includes(o.t))){R.mouth.push(o);set(o,{loc:"talk"})}
       else if(["washer","cap","nut","eye"].includes(o.t)){R.eye.push(o);set(o,{loc:"blink"})}
       else if(o.t==="gear"||(o.t==="knob"&&Math.abs(dy)<.6)){R.eye.push(o);set(o,{loc:o.t==="gear"?"spin":"blink"})} // dişli ya da pirinç top göz olur
-      else if(["bolt","brush","sheet","spring"].includes(o.t)||LIMB.includes(o.t)){R.ear.push(o);set(o,{loc:"wig"})}
+      else if(["bolt","brush","sheet","spring","horn","nail"].includes(o.t)||LIMB.includes(o.t)){R.ear.push(o);set(o,{loc:"wig"})}
       else if(o.t==="funnel"||o.t==="lid"){R.hat.push(o)}
     });
   }
@@ -446,11 +610,11 @@ function buildRig0(){
     if(seen.has(r))return;
     const g=branch(r), leg=r.y>thr||(Math.abs(r.x-tx)<B.hx*.4&&r.y>body.y), side=r.x<tx?-1:1, A=hext(r);
     const an=leg?[tx,bot]:[tx,body.y-B.hy*.4]; // eklem: gövdeye en yakın nokta
-    const ox=Math.min(r.x+A.hx,Math.max(r.x-A.hx,an[0])), oy=Math.min(r.y+A.hy,Math.max(r.y-A.hy,an[1]));
+    const [ox,oy]=jointOf(r,tt);
     const dl=((side<0)!==leg)?0:-.45; // yürüyüş: sol kol ile sağ bacak aynı fazda
-    const tail=r.t==="hook"; // kuyruk teli ayrı bölüm: kuyruk
-    g.forEach(o=>set(o,{rig:rg(ox,oy,tail?25:leg?20:30,.45,dl),rigG:tail?"tail":leg?"leg":"arm"}));
-    (tail?R.tail:leg?R.leg:R.arm).push(r);
+    const tail=["hook","tail","fin"].includes(r.t), jaw=r.t==="jaw"; // alt çene: ağız bölümü
+    g.forEach(o=>set(o,{rig:rg(ox,oy,jaw?20:tail?22:leg?16:24,.45,dl),rigG:jaw?"mouth":tail?"tail":leg?"leg":"arm"}));
+    (jaw?R.mouth:tail?R.tail:leg?R.leg:R.arm).push(r);
   });
   items.filter(o=>["gear","dial"].includes(o.t)).forEach(o=>{R.gear.push(o);set(o,{loc:"spin"})}); // dişli yerinde döner
   if(head&&head.t==="bulb")set(head,{loc:"glow"});                                // ampul kafa yanıp söner
@@ -459,11 +623,13 @@ function buildRig0(){
 
 function buildRig(){ // robot rolleri + araç rolleri (tekerlek, far)
   const rig=buildRig0(), add=(o,v)=>rig.plan.set(o.id,{...(rig.plan.get(o.id)||{}),...v});
-  items.filter(o=>WHEELS.includes(o.t)).forEach(o=>{rig.R.wheel.push(o);add(o,{loc:"roll",locG:"wheel"})});
+  items.filter(o=>WHEELS.includes(o.t)).forEach(o=>{rig.R.wheel.push(o);add(o,{loc:o.t==="track"?"creep":"roll",locG:"wheel"})});
   items.filter(o=>o.t==="bulb"||o.t==="lamp").forEach(o=>add(o,{loc:"glow",locG:"light"})); // ampul ve far: LED ile yanar
   items.filter(o=>o.t==="engine").forEach(o=>{rig.R.engine.push(o);add(o,{loc:"shake",locG:"engine"})}); // motor bloğu titrer
   items.filter(o=>o.t==="pipe").forEach(o=>add(o,{locG:"engine",smoke:true}));                         // egzoz duman verir
-  items.filter(o=>o.t==="steer").forEach(o=>{rig.R.steer.push(o);add(o,{loc:"turn",locG:"steer"})});   // direksiyon döner
+  items.filter(o=>o.t==="steer"||o.t==="bar").forEach(o=>{rig.R.steer.push(o);add(o,{loc:"turn",locG:"steer"})});
+  items.filter(o=>o.t==="prop"||o.t==="rotor").forEach(o=>{rig.R.prop.push(o);add(o,{loc:o.t==="prop"?"spinf":"rotor",locG:"prop"})}); // pervane ve rotor döner
+  items.filter(o=>o.t==="flame").forEach(o=>{rig.R.engine.push(o);add(o,{loc:"flicker",locG:"engine"})});                                                     // alev titreşir   // direksiyon döner
   return rig;
 }
 
@@ -499,6 +665,7 @@ function testSystem(){
   // c) Hareket planı: hangi parça nerede, nasıl oynayacak
   const rig=buildRig(), R=rig.R, nm=k=>[...new Set(R[k].map(o=>PARTS[o.t].n))].join(" ve ");
   const car=R.wheel.length>=2&&!R.leg.length; // araç: tekerlekli, bacaksız
+  const air=!car&&(R.prop.length>0||items.some(o=>o.t==="flame")); // hava aracı: pervane ya da alev
   if(car){
     ok("Araç: "+R.wheel.length+" tekerlek ("+nm("wheel")+"). Motor tekerleklere bağlanınca dönüp sürer.");
     if(R.engine.length)ok("Motor bloğu: çalışınca titrer"+(items.some(o=>o.t==="pipe")?", egzozdan duman çıkar":"")+".");
@@ -506,6 +673,7 @@ function testSystem(){
     const lamps=items.filter(o=>o.t==="bulb"||o.t==="lamp").length;
     if(lamps)ok("Far: "+lamps+", LED ile yanar.");
   }
+  else if(air)ok("Hava aracı: pervane ya da alev, motor bağlanınca çalışır ve araç havalanır.");
   else if(!rig.body)wn("Gövde yok: bir konserve ekle. Kafa, kol ve bacaklar gövdeye göre bulunur.");
   else{
     if(R.head.length)ok("Kafa ("+nm("head")+"): "+(R.neck.length?"boyun yayı zıplar, kafa yalpalar.":"kafa yalpalar."));
@@ -560,7 +728,7 @@ const CT={ // devre elemanları: boyut ve uç noktaları (merkeze göre)
   led:{n:"LED",w:28,h:46,t:{a:[-6,20],b:[6,20]}},
   switch:{n:"Anahtar",w:48,h:28,t:{a:[-21,0],b:[21,0]}}
 };
-const DN={arm:"Kollar",leg:"Bacaklar",head:"Kafa",eye:"Gözler",mouth:"Ağız",ear:"Kulaklar",skirt:"Etek",gear:"Dişli",tail:"Kuyruk",wheel:"Tekerlekler",engine:"Motor bloğu",steer:"Direksiyon",body:"Gövde"};
+const DN={arm:"Kollar",leg:"Bacaklar",head:"Kafa",eye:"Gözler",mouth:"Ağız",ear:"Kulaklar",skirt:"Etek",gear:"Dişli",tail:"Kuyruk",wheel:"Tekerlekler",engine:"Motor bloğu",steer:"Direksiyon",prop:"Pervane",body:"Gövde"};
 let comps=[], wires=[], cid=1, selC=null, selW=null, wirePrev=null, cev=null, crig=null, mode="mech", cdrag=null;
 const tpos=(c,k)=>({x:c.x+CT[c.t].t[k][0],y:c.y+CT[c.t].t[k][1]});
 const termPos=s=>{const [id,k]=s.split(".");const c=comps.find(o=>o.id===+id);return c&&tpos(c,k)};
@@ -596,7 +764,7 @@ function evalCircuit(){
   }
   return res;
 }
-const availDrives=rig=>["arm","leg","tail","head","eye","mouth","ear","skirt","gear","wheel","engine","steer"].filter(g=>rig.R[g]&&rig.R[g].length).concat("body");
+const availDrives=rig=>["arm","leg","tail","head","eye","mouth","ear","skirt","gear","wheel","engine","steer","prop"].filter(g=>rig.R[g]&&rig.R[g].length).concat("body");
 function driveOf(c,rig){ // seçilmemişse robotta motora en yakın bölüm
   const av=availDrives(rig);
   if(c.drive&&av.includes(c.drive))return c.drive;
@@ -650,7 +818,7 @@ function drawCirc(ev,rig){
   if(wirePrev)h+=`<path class="wprev" d="M${wirePrev.x1} ${wirePrev.y1}L${wirePrev.x2} ${wirePrev.y2}"/>`;
   $("#circ").innerHTML=h;
 }
-function circLive(){ // her değişiklikte devreyi çöz, robotu enerjili bölümlerle oynat
+function circLive(){ if(fight)return; // her değişiklikte devreyi çöz, robotu enerjili bölümlerle oynat
   crig=buildRig(); cev=evalCircuit();
   const run=cev.active.size>0, sh=cev.short.length>0; // durum değişince ses: kısa devre, enerji geldi, enerji gitti
   if(sh&&!lastShort)sfxShort(); else if(run&&!lastRun)sfxPower(true); else if(!run&&lastRun&&!sh)sfxPower(false);
@@ -880,15 +1048,410 @@ function setScape(act,dt){
   if(has("wheel"))hum({noise:true,ff:260,v:.06,pl:dt?1/(2*dt):0});
   if(has("engine")){hum({type:"sawtooth",f:46,ff:380,v:.07,lf:7,ld:.7});hum({type:"square",f:92,ff:300,v:.03,lf:7,ld:.8});every(280,()=>noise(.09,{v:.035,f:500,q:.8,type:"lowpass"}))}
   if(has("light"))hum({type:"sine",f:118,ff:600,v:.018});
+  if(has("prop"))hum({noise:true,ff:1400,v:.045,lf:16,ld:.7}); // pervane ve rotor vızıltısı
 }
 ["pointerdown","pointerup","click","keydown"].forEach(ev=>addEventListener(ev,()=>{if(soundOn)audio()},{passive:true}));
 addEventListener("visibilitychange",()=>{
   if(document.hidden){stopScape();AC&&AC.suspend()}else{AC&&AC.resume();setScape(lastAct,lastDt)}
 });
 
+/* ========== SAVAŞ (gerçek zamanlı, botlara karşı) ========== */
+// Robotlar sahnede gerçekten yürür, silah dalı eklem noktası etrafında savrulur ve vuruş, parçaların gerçek
+// dikdörtgenlerinin çarpışmasıyla (SAT) belirlenir. Silah teması olmazsa hasar yoktur; sıçrayarak, geri çekilerek
+// ya da blok ile kaçınılabilir. Can/hasar/hız değerleri yapıdan, devre bonusları enerjili bölümlerden gelir.
+const WPN={ // parça türü: [ad, hasar, tür]  melee: yakın dövüş, ranged: atış, fire: alev
+  masher:["Et tokmağı",22,"melee"],hammer:["Çekiç",24,"melee"],wrench:["Anahtar",18,"melee"],knife:["Bıçak",17,"melee"],claw:["Pençe",20,"melee"],
+  pliers:["Pense",16,"melee"],bucket:["Kepçe",23,"melee"],boom:["Kepçe kolu",21,"melee"],jaw:["Isırık",18,"melee"],horn:["Boynuz",15,"melee"],
+  chain:["Zincir kırbacı",13,"melee"],stick:["Çubuk",10,"melee"],fork:["Çatal",9,"melee"],spoon:["Kaşık",7,"melee"],ladle:["Kepçe darbesi",11,"melee"],
+  whisk:["Çırpıcı",8,"melee"],spatula:["Spatula",10,"melee"],driver:["Tornavida",12,"melee"],rod:["Saplama",8,"melee"],hose:["Hortum",9,"melee"],
+  hook:["Kuyruk darbesi",11,"melee"],tail:["Kuyruk darbesi",12,"melee"],fin:["Yüzgeç",10,"melee"],elbow:["Tekme",8,"melee"],nail:["Çivi",7,"melee"],
+  cannon:["Top atışı",26,"ranged"],flame:["Alev",15,"fire"],
+  bleg:["Bacak darbesi",12,"melee"],wing:["Kanat çırpma",11,"melee"],elytra:["Kabuk darbesi",14,"melee"]
+};
+let fight=null, fightCache=null, coins=+store.get("hurda-para")||0, wins=+store.get("hurda-galibiyet")||0;
+const GRAV=900;
+function withItems(list,fn){const keep=items;items=list;try{return fn()}finally{items=keep}}
+function cornersOf(o,th=0,pv=null){ // parçanın dört köşesi; th: eklem etrafında dönüş (derece)
+  const p=PARTS[o.t], hw=p.w*o.s/2, hh=p.h*o.s/2;
+  let cx=o.x, cy=o.y, ang=o.r*Math.PI/180;
+  if(th&&pv){const t=th*Math.PI/180,c=Math.cos(t),s=Math.sin(t),dx=cx-pv[0],dy=cy-pv[1];cx=pv[0]+dx*c-dy*s;cy=pv[1]+dx*s+dy*c;ang+=t}
+  const c=Math.cos(ang), s=Math.sin(ang);
+  return [[-hw,-hh],[hw,-hh],[hw,hh],[-hw,hh]].map(([x,y])=>[cx+x*c-y*s,cy+x*s+y*c]);
+}
+function bboxOf(list){
+  const P=list.flatMap(o=>cornersOf(o));
+  const x0=Math.min(...P.map(q=>q[0])), x1=Math.max(...P.map(q=>q[0])), y0=Math.min(...P.map(q=>q[1])), y1=Math.max(...P.map(q=>q[1]));
+  return {cx:(x0+x1)/2,bot:y1,w:Math.max(20,x1-x0),h:Math.max(20,y1-y0)};
+}
+const keyOf=q=>q&&q.rig?q.rigG+"|"+q.rig.ox+","+q.rig.oy:"";
+function fighterOf(src,name,useCirc,tier=1){
+  const list=src.map(o=>({...o}));
+  return withItems(list,()=>{
+    const rig=buildRig(), R=rig.R;
+    const pw=useCirc&&comps.length?poweredGroups(evalCircuit(),rig):null, has=g=>!!pw&&pw.has(g); // devre bonusu
+    let mass=0, armor=0;
+    list.forEach(o=>{const m=PARTS[o.t].m*o.s; mass+=m; if(BODY.includes(o.t)||BASE.includes(o.t)||o.t==="plate"||o.t==="hull")armor+=m});
+    const seen=new Set([list[0]]), q=[list[0]];
+    while(q.length)for(const o of nbrs(q.shift()))if(!seen.has(o)){seen.add(o);q.push(o)}
+    const pen=Math.max(.6,1-.07*(list.length-seen.size)); // kopuk parça cezası
+    const art=artScore([]);
+    const spd=(R.leg.length*5+R.wheel.length*7+R.prop.length*8+R.tail.length)/Math.sqrt(mass+8)*(has("leg")||has("wheel")||has("prop")?1.3:1);
+    const wp={};
+    list.forEach(o=>{const w=WPN[o.t]; if(!w)return; const e=wp[o.t]=wp[o.t]||{t:o.t,n:w[0],k:w[2],d:0,c:0}; e.d+=w[1]*Math.min(1.6,o.s); e.c++});
+    let atk=Object.values(wp).map(w=>({t:w.t,n:w.n,k:w.k,dmg:w.d*(w.c>1?.75:1)*(w.k==="melee"&&has("arm")?1.3:1)*(w.k!=="melee"&&has("engine")?1.25:1)}));
+    if(R.wheel.length>=2||list.some(o=>o.t==="track"))atk.push({t:"ram",n:"Çarpma",k:"ram",dmg:(10+mass*.35)*(has("wheel")?1.3:1)});
+    atk=atk.sort((a,b)=>b.dmg-a.dmg).slice(0,3);
+    if(!atk.length)atk=[{t:"body",n:"Gövde darbesi",k:"ram",dmg:6}];
+    const hp=Math.round((40+mass*4+armor*3)*pen*tier), def=Math.min(.55,armor/(armor+30)+(has("body")?.05:0));
+    const f={name,items:list,plan:rig.plan,hp,max:hp,def,spd,tier,boosted:!!pw,atk,
+      crit:.05+art/400+(has("head")?.05:0),b:bboxOf(list)};
+    // silah dalları: silahın bağlı olduğu uzuv grubu, eklem noktası etrafında savrulur
+    const tor=list.filter(o=>BODY.includes(o.t));
+    atk.forEach(w=>{
+      w.br=null; if(w.k==="ram")return;
+      const it=list.filter(o=>o.t===w.t).sort((x,y)=>y.s-x.s)[0], qq=rig.plan.get(it.id), k=keyOf(qq)||("i"+it.id);
+      const mem=keyOf(qq)?list.filter(o=>keyOf(rig.plan.get(o.id))===k):[it];
+      const pv=keyOf(qq)?[qq.rig.ox,qq.rig.oy]:jointOf(it,tor.length?tor:[it]);
+      let tip=[0,0], L=1;
+      mem.forEach(o=>cornersOf(o).forEach(c=>{const d=Math.hypot(c[0]-pv[0],c[1]-pv[1]);if(d>L){L=d;tip=[c[0]-pv[0],c[1]-pv[1]]}}));
+      const shoot=w.k==="ranged"||w.k==="fire";
+      const side=Math.abs(tip[0])>5?Math.sign(tip[0]):(pv[0]>=f.b.cx?1:-1); // silahın uzandığı yön öne baksın
+      const sg=Math.abs(tip[1])>2?-Math.sign(tip[1])*side:side; // ucu rakibe doğru savuran dönüş yönü
+      w.br={key:k,ids:new Set(mem.map(o=>o.id)),pv,L,tip,side,sg,reachL:(pv[0]-f.b.cx)*side+L};
+    });
+    f.power=Math.round(hp*.22+atk.reduce((s,a)=>s+a.dmg,0)*1.6+spd*5+def*30);
+    return f;
+  });
+}
+function satHit(P,Q){ // iki dışbükey çokgen kesişiyor mu
+  for(const poly of [P,Q])for(let i=0;i<poly.length;i++){
+    const a=poly[i], b=poly[(i+1)%poly.length], nx=b[1]-a[1], ny=a[0]-b[0];
+    let p0=1e9,p1=-1e9,q0=1e9,q1=-1e9;
+    for(const v of P){const d=v[0]*nx+v[1]*ny;p0=Math.min(p0,d);p1=Math.max(p1,d)}
+    for(const v of Q){const d=v[0]*nx+v[1]*ny;q0=Math.min(q0,d);q1=Math.max(q1,d)}
+    if(p1<q0||q1<p0)return false;
+  }
+  return true;
+}
+// robotun parçalarının dünyadaki çokgenleri (br verilirse o dal th derece döner)
+const toW=(f,c)=>[f.x+f.sx*f.s*(c[0]-f.b.cx), FLOOR-f.y+f.s*(c[1]-f.b.bot)];
+const polysOf=(f,br,th)=>f.items.map(o=>({o,P:cornersOf(o,br&&br.ids.has(o.id)?th:0,br&&br.pv).map(c=>toW(f,c))}));
+const cen=P=>[P.reduce((s,v)=>s+v[0],0)/P.length,P.reduce((s,v)=>s+v[1],0)/P.length];
+function firstHit(A,B){
+  for(const a of A)for(const b of B)if(satHit(a.P,b.P)){const c1=cen(a.P),c2=cen(b.P);return {pt:[(c1[0]+c2[0])/2,(c1[1]+c2[1])/2],head:HEAD.includes(b.o.t)}}
+  return null;
+}
+
+// --- hareket, saldırı, yapay zeka ---
+function initFighter(f,k){
+  Object.assign(f,{k,x:VW*(k?.75:.25),y:0,vx:0,vy:0,face:k?-1:1,state:"idle",hurtT:0,flashT:0,blocking:false,atkS:null,
+    cd:f.atk.map(()=>.4),inp:{left:0,right:0,jump:0,block:0,atk:null},ai:k===1,aggr:k?.7+(f.tier-.85)*.5:.9,aiT:.3,
+    mv:Math.min(120,34+f.spd*14),id:k?"fB":"fA",sig:"",lastKey:null});
+  const main=f.atk.find(w=>w.br); f.sx=f.face*(main?main.br.side:1);
+  f.hp=f.max;
+}
+function startAtk(F,f,i){
+  const w=f.atk[i]; f.state="atk"; f.blocking=false;
+  f.sx=f.face*(w.br?w.br.side:1);
+  f.atkS={i,w,t:0,done:false,shots:0,wind:.15+(w.br?w.br.L/1200:0),strike:w.k==="ram"?.3:.16,rec:.3};
+  f.cd[i]=.45+w.dmg/45; sfxSwing(w.k);
+}
+function theta(a){ // silah dalının dönme açısı (derece)
+  const w=a.w, s=w.br?w.br.sg:1, T=a.t;
+  if(w.k==="ranged"||w.k==="fire")return T>=a.wind&&T<a.wind+.14?-s*8:0; // geri tepme
+  const back=-s*35, fwd=s*85;
+  if(T<a.wind)return back*(T/a.wind);
+  if(T<a.wind+a.strike)return back+(fwd-back)*((T-a.wind)/a.strike);
+  return fwd*(1-Math.min(1,(T-a.wind-a.strike)/a.rec));
+}
+function fireProj(F,f,w){
+  const b=w.br, tip=toW(f,[b.pv[0]+b.tip[0],b.pv[1]+b.tip[1]]), fire=w.k==="fire";
+  F.proj.push({x:tip[0],y:tip[1],vx:f.face*(fire?170:320),vy:fire?(Math.random()-.5)*30:0,life:fire?.5:1.3,owner:f,tgt:f===F.me?F.bot:F.me,w,fire,el:null});
+}
+function applyHit(F,a,d,w,pt,mult=1){
+  let dmg=w.dmg*.6*(.9+Math.random()*.2)*mult;
+  const crit=Math.random()<a.crit; if(crit)dmg*=1.8;
+  const blocked=d.blocking&&(a.x-d.x)*d.face>0;
+  dmg=Math.max(1,Math.round(dmg*(1-d.def)*(blocked?.25:1)));
+  d.hp=Math.max(0,d.hp-dmg); d.flashT=.22;
+  if(!blocked){d.state="hurt";d.hurtT=.32;d.atkS=null;d.vy=d.y===0?130:d.vy}
+  d.vx+=a.face*(blocked?70:150+dmg*5);
+  F.hitstop=.07; spark(pt,crit,blocked); popup(pt,dmg,crit,blocked); sfxHit(crit,blocked); hud();
+  const st=$("#stage"); st.classList.remove("shake"); void st.getBoundingClientRect(); st.classList.add("shake");
+}
+function stepAtk(F,f,o,dt){
+  const a=f.atkS, w=a.w; a.t+=dt;
+  const act=a.t>=a.wind&&a.t<a.wind+a.strike;
+  if(w.k==="melee"&&w.br&&act&&!a.done){
+    const cur=theta(a), prev=a.prevTh==null?cur:a.prevTh, tg=polysOf(o);
+    for(let k=1;k<=4&&!a.done;k++){ // hızlı savrulmada parçanın içinden geçmesin diye ara açılarda da bak
+      const h=firstHit(polysOf(f,w.br,prev+(cur-prev)*k/4).filter(x=>w.br.ids.has(x.o.id)),tg);
+      if(h){a.done=true;applyHit(F,f,o,w,h.pt,h.head?1.25:1)}
+    }
+    a.prevTh=cur;
+  }
+  if((w.k==="ranged"||w.k==="fire")&&w.br){
+    const n=w.k==="fire"?3:1;
+    while(a.shots<n&&a.t>=a.wind+a.shots*.1){a.shots++;fireProj(F,f,w)}
+  }
+  if(w.k==="ram"){
+    if(act)f.vx=f.face*300;
+    if(act&&!a.done){const h=firstHit(polysOf(f),polysOf(o)); if(h){a.done=true;applyHit(F,f,o,w,h.pt,1);f.vx=0}}
+  }
+  if(a.t>=a.wind+a.strike+a.rec){f.state="idle";f.atkS=null}
+}
+function distToPolys(pt,polys){ // noktanın çokgenlere en kısa uzaklığı (içindeyse 0)
+  let m=1e9;
+  for(const {P} of polys){
+    let pos=0,neg=0;
+    for(let i=0;i<P.length;i++){
+      const a=P[i], b=P[(i+1)%P.length], cr=(b[0]-a[0])*(pt[1]-a[1])-(b[1]-a[1])*(pt[0]-a[0]);
+      cr>=0?pos++:neg++;
+      const dx=b[0]-a[0], dy=b[1]-a[1], tt=Math.max(0,Math.min(1,((pt[0]-a[0])*dx+(pt[1]-a[1])*dy)/(dx*dx+dy*dy||1)));
+      m=Math.min(m,Math.hypot(pt[0]-a[0]-tt*dx,pt[1]-a[1]-tt*dy));
+    }
+    if(!pos||!neg)return 0;
+  }
+  return m;
+}
+function aiInput(F,f,o,dt){
+  const inp=f.inp; f.aiT-=dt; if(f.aiT>0)return inp;
+  f.aiT=(.08+Math.random()*.18)/f.aggr;
+  inp.left=inp.right=inp.block=0;
+  const dir=o.x>=f.x?1:-1, oP=polysOf(o), gap=Math.abs(o.x-f.x)-(f.b.w*f.s+o.b.w*o.s)/2;
+  const reachOf=w=>{ // negatif: silah rakibe ulaşıyor (eklem noktasından rakibin en yakın parçasına mesafe, silah boyuna göre)
+    if(w.k==="ranged")return gap-260;
+    if(w.k==="fire")return gap-95;
+    if(w.k==="ram")return gap-90;
+    const b=w.br, px=f.x+f.face*b.side*f.s*(b.pv[0]-f.b.cx), py=FLOOR-f.y+f.s*(b.pv[1]-f.b.bot);
+    return distToPolys([px,py],oP)-b.L*f.s*.9;
+  };
+  let best=-1, bd=0, minR=1e9;
+  f.atk.forEach((w,i)=>{
+    const r=reachOf(w); if(w.dmg>=bd*.6)minR=Math.min(minR,r);
+    if(f.cd[i]>0)return;
+    if(r<=0&&(w.k!=="ranged"||gap>40)&&w.dmg>bd){best=i;bd=w.dmg}
+  });
+  if(o.state==="atk"&&gap<(o.atkS&&o.atkS.w.br?o.atkS.w.br.reachL*o.s:90)&&Math.random()<.3*f.aggr+.1){ // gelen saldırıdan kaçın
+    const r=Math.random(); if(r<.5)inp.block=1; else if(r<.75)inp.jump=1; else dir>0?inp.left=1:inp.right=1;
+    return inp;
+  }
+  if(best>=0&&Math.random()<.45+.45*f.aggr){inp.atk=best;return inp}
+  const kite=f.atk.every(w=>w.k==="ranged"||w.k==="fire");
+  if(kite&&gap<110)dir>0?inp.left=1:inp.right=1;      // atışçı mesafe açar
+  else if(minR>0)dir>0?inp.right=1:inp.left=1;        // henüz menzilde değil: yaklaş
+  return inp;
+}
+function stepF(F,f,o,dt){
+  if(f.state==="ko")return;
+  const inp=f.ai?aiInput(F,f,o,dt):f.inp;
+  f.hurtT=Math.max(0,f.hurtT-dt); f.flashT=Math.max(0,f.flashT-dt); f.cd=f.cd.map(c=>Math.max(0,c-dt));
+  if(f.state==="hurt"&&f.hurtT<=0)f.state="idle";
+  const free=f.state==="idle";
+  f.blocking=free&&!!inp.block&&f.y===0;
+  if(free){
+    f.face=o.x>=f.x?1:-1;
+    const main=f.atk.find(w=>w.br); f.sx=f.face*(main?main.br.side:1);
+    const tv=f.blocking?0:((inp.right?1:0)-(inp.left?1:0))*f.mv;
+    f.vx+=(tv-f.vx)*Math.min(1,dt*12);
+    if(inp.jump&&f.y===0&&!f.blocking)f.vy=400;
+    if(inp.atk!=null&&!f.blocking&&f.atk[inp.atk]&&f.cd[inp.atk]<=0)startAtk(F,f,inp.atk);
+  }else if(f.state==="hurt")f.vx*=Math.pow(.03,dt);
+  else if(f.atkS&&!(f.atkS.w.k==="ram"&&f.atkS.t>=f.atkS.wind))f.vx*=Math.pow(.01,dt);
+  inp.jump=0; inp.atk=null;
+  if(f.y>0||f.vy>0){f.vy-=GRAV*dt;f.y+=f.vy*dt;if(f.y<=0){f.y=0;f.vy=0}}
+  f.x+=f.vx*dt;
+  const lo=VW*.08+f.b.w*f.s/2, hi=VW*.92-f.b.w*f.s/2; f.x=Math.max(lo,Math.min(hi,f.x));
+  if(f.state==="atk"&&f.atkS)stepAtk(F,f,o,dt);
+}
+function stepProj(F,dt){
+  F.proj=F.proj.filter(p=>{
+    p.x+=p.vx*dt; p.y+=p.vy*dt; p.life-=dt;
+    const hit=p.life>0&&firstHit([{o:null,P:[[p.x-5,p.y-5],[p.x+5,p.y-5],[p.x+5,p.y+5],[p.x-5,p.y+5]]}],polysOf(p.tgt));
+    if(hit){applyHit(F,p.owner,p.tgt,p.w,hit.pt,(p.fire?.45:1)*(hit.head?1.25:1))}
+    if(hit||p.life<=0||p.x<0||p.x>VW){if(p.el)p.el.remove();return false}
+    return true;
+  });
+}
+function step(F,dt){
+  F.time-=dt;
+  stepF(F,F.me,F.bot,dt); stepF(F,F.bot,F.me,dt);
+  const d=F.bot.x-F.me.x, min=(F.me.b.w*F.me.s+F.bot.b.w*F.bot.s)*.38;
+  if(Math.abs(d)<min&&F.me.y<20&&F.bot.y<20){const push=(min-Math.abs(d))/2*(d>=0?1:-1);F.me.x-=push;F.bot.x+=push}
+  stepProj(F,dt);
+  if(!F.ending){
+    const dead=F.me.hp<=0?F.me:F.bot.hp<=0?F.bot:null;
+    if(dead||F.time<=0){
+      const loser=dead||(F.me.hp/F.me.max<F.bot.hp/F.bot.max?F.me:F.bot);
+      F.ending=1; F.loser=loser; loser.state="ko"; loser.atkS=null; F.slow=.35; sfxKO();
+      const el=$("#"+loser.id); if(el)el.style.setProperty("--ka",(-82*loser.face*Math.sign(loser.sx))+"deg");
+      if(!dead)say("Süre doldu!");
+    }
+  }
+}
+
+// --- çizim ---
+const idleSet=()=>new Set(["body","eye","light","engine"]);
+function fighterHTML(f,pw){
+  const A=g=>pw.has(g);
+  return f.items.map(i=>{
+    const p=PARTS[i.t], x=-p.w/2, y=-p.h/2, q=f.plan.get(i.id)||{};
+    const r=q.rig&&A(q.rigG)?q.rig:null, bob=q.bob&&A("body"), loc=q.loc&&A(q.locG)?q.loc:"";
+    const lit=A("light")&&(q.locG==="eye"||q.locG==="light")?" lit":"";
+    const rs=r?"--ox:"+r.ox+"px;--oy:"+r.oy+"px;--a:"+r.a+";--d:"+r.d+"s;--dl:"+r.dl+"s":"";
+    const flo=i.t==="flame"&&!A("engine")?"flo":"";
+    const puff=q.smoke&&A("engine")?'<g transform="translate('+(x-3)+' 0)"><circle class="pf" r="4"/><circle class="pf" style="animation-delay:.4s" r="4"/><circle class="pf" style="animation-delay:.8s" r="4"/></g>':"";
+    return `<g class="ib" data-b="${keyOf(q)||"i"+i.id}"><g class="${flo}"><g class="${bob?"bob":""}"><g class="${r?"rig swing":""}" style="${rs}"><g filter="url(#sh)"><g transform="${tf(i)}"><g class="loc ${loc}${lit}">`
+      +`<use href="#p-${i.t}" x="${x}" y="${y}" width="${p.w}" height="${p.h}"/>${puff}</g></g></g></g></g></g></g>`;
+  }).join("");
+}
+const setAnim=(f,set)=>{const g=$("#"+f.id+" .fl > g"); if(g)g.innerHTML=fighterHTML(f,set)};
+function setBr(f,key,th,pv){ // silah dalını döndür (th=null: bırak, CSS salınımı sürsün)
+  const root=$("#"+f.id); if(!root)return;
+  root.querySelectorAll('.ib[data-b="'+key+'"]').forEach(e=>{
+    if(th===null){e.removeAttribute("transform");e.classList.remove("hold")}
+    else{e.setAttribute("transform","rotate("+th.toFixed(1)+" "+pv[0].toFixed(1)+" "+pv[1].toFixed(1)+")");e.classList.add("hold")}
+  });
+}
+function renderArena(){
+  const F=fight; if(!F)return;
+  [F.me,F.bot].forEach(f=>{f.s=Math.min(.3*VW/f.b.w,Math.min(230,FLOOR*.45)/f.b.h,1.15);f.sig="";f.lastKey=null});
+  $("#arena").innerHTML=[F.me,F.bot].map(f=>`<g id="${f.id}"><g class="fl"><g transform="translate(${-f.b.cx} ${-f.b.bot})">${fighterHTML(f,idleSet())}</g></g></g>`).join("")+'<g id="fx"></g>';
+  F.proj.forEach(p=>p.el=null);
+}
+function renderFrame(F){
+  [F.me,F.bot].forEach(f=>{
+    const el=$("#"+f.id); if(!el)return;
+    el.setAttribute("transform","translate("+f.x.toFixed(1)+" "+(FLOOR-f.y).toFixed(1)+") scale("+(f.sx*f.s).toFixed(3)+" "+f.s.toFixed(3)+")");
+    el.classList.toggle("flash",f.flashT>0); el.classList.toggle("blk",f.blocking); el.classList.toggle("ko",f.state==="ko");
+    const set=idleSet(); if(f.state==="idle"&&(Math.abs(f.vx)>10||f.y>0)){set.add("leg");set.add("wheel")}
+    const sig=[...set].sort().join(","); if(sig!==f.sig){f.sig=sig;setAnim(f,set);f.lastKey=null}
+    const a=f.atkS, br=a&&a.w.br;
+    if(f.lastKey&&(!br||br.key!==f.lastKey)){setBr(f,f.lastKey,null);f.lastKey=null}
+    if(br){setBr(f,br.key,theta(a),br.pv);f.lastKey=br.key}
+  });
+  const fx=$("#fx");
+  if(fx)F.proj.forEach(p=>{
+    if(!p.el){fx.insertAdjacentHTML("beforeend",`<circle class="${p.fire?"pj fire":"pj"}" r="${p.fire?9:6}"/>`);p.el=fx.lastElementChild}
+    if(p.el){p.el.setAttribute("cx",p.x.toFixed(1));p.el.setAttribute("cy",p.y.toFixed(1))}
+  });
+  $("#htm").textContent=Math.ceil(Math.max(0,F.time));
+  $$("#wbtn button").forEach((b,i)=>{b.style.opacity=F.me.cd[i]>0?.45:1});
+}
+function hud(){
+  const F=fight; if(!F)return;
+  [["A",F.me],["B",F.bot]].forEach(([k,f])=>{
+    $("#hn"+k).textContent=f.name; $("#hv"+k).textContent=f.hp+"/"+f.max;
+    const bar=$("#hp"+k); bar.style.width=Math.max(0,f.hp/f.max*100)+"%"; bar.style.filter=f.hp/f.max<.3?"hue-rotate(-60deg)":"";
+  });
+}
+function popup(pt,dmg,crit,blocked){
+  const g=$("#fx"); if(!g)return;
+  g.insertAdjacentHTML("beforeend",`<text class="dmg${crit?" crit":""}" x="${pt[0]}" y="${pt[1]-14}" text-anchor="middle">${blocked?"BLOK ":crit?"KRİTİK ":""}-${dmg}</text>`);
+  setTimeout(()=>{const n=g.querySelector("text.dmg");n&&n.remove()},1000);
+}
+function spark(pt,crit,blocked){ // vuruş kıvılcımı
+  const g=$("#fx"); if(!g)return;
+  const col=blocked?"#7fdcff":crit?"#ffe48a":"#fff3b0";
+  g.insertAdjacentHTML("beforeend",`<circle class="boom" cx="${pt[0]}" cy="${pt[1]}" r="${crit?22:15}" style="fill:${col}"/>`);
+  setTimeout(()=>{const n=g.querySelector("circle.boom");n&&n.remove()},500);
+}
+const talk=f=>withItems(f.items,()=>speak(4));
+
+// --- ses ---
+const sfxSwing=k=>k==="ranged"?(tone(140,.25,{type:"sawtooth",v:.08,f2:60}),noise(.2,{v:.12,f:300,type:"lowpass"})):k==="fire"?noise(.5,{v:.12,f:2500,q:.4,type:"highpass"}):noise(.22,{v:.12,f:600,f2:2200,q:1.2});
+function sfxHit(crit,blocked){
+  if(blocked){tone(900,.2,{v:.18,type:"triangle"});noise(.05,{v:.2,f:3000,q:2});return}
+  tone(180,.18,{v:crit?.3:.2,f2:70});noise(.08,{v:.3,f:1200,q:.7});const b=420+Math.random()*300;tone(b,.35,{v:.12,type:"triangle"});tone(b*2.76,.18,{v:.06});
+  if(crit)tone(900,.3,{v:.1,f2:1800,type:"square"});
+}
+function sfxKO(){for(let i=0;i<5;i++){noise(.06,{v:.2,f:2000+Math.random()*2000,q:3,delay:i*.07});tone(300+Math.random()*500,.2,{v:.08,delay:i*.07,type:"triangle"})}tone(220,.9,{type:"sawtooth",v:.12,f2:55})}
+const sfxVictory=()=>[392,523,659,784,1047].forEach((f,i)=>tone(f,.22,{type:"triangle",v:.14,delay:i*.12}));
+const sfxDefeat=()=>[392,330,262,196].forEach((f,i)=>tone(f,.35,{type:"sawtooth",v:.09,f2:f*.9,delay:i*.25}));
+
+// --- akış ---
+function loop(ts){
+  const F=fight; if(!F||F.over)return;
+  const rdt=Math.min(.033,F.last?(ts-F.last)/1000:0); F.last=ts;
+  let dt=rdt;
+  if(F.hitstop>0){F.hitstop-=rdt;dt=0} // vuruş anında kısa donma
+  dt*=F.slow;
+  if(dt>0)step(F,dt);
+  renderFrame(F);
+  if(F.ending){
+    F.endT+=rdt;
+    if(F.endT>1.1){const win=F.loser===F.bot;F.over=true;win?sfxVictory():sfxDefeat();talk(win?F.me:F.bot);finish(F,win);return}
+  }
+  F.raf=requestAnimationFrame(loop);
+}
+function finish(F,win){
+  const rew=win?F.reward:Math.round(F.reward*.15);
+  coins+=rew; if(win)wins++; store.set("hurda-para",coins); store.set("hurda-galibiyet",wins);
+  showLog([win?"verdict ok":"verdict bad",win?"Kazandın! +"+rew+" ₺":"Yenildin, teselli ödülü +"+rew+" ₺"],[]);
+  $("#log").insertAdjacentHTML("beforeend",'<div class="mu">Toplam para: '+coins+' ₺, galibiyet: '+wins+'</div><button class="botrow" data-act="again">Aynı botla tekrar dövüş</button><button class="botrow" data-act="new">Başka bot seç</button><button class="botrow" data-act="exit">Atölyeye dön</button>');
+}
+const rewardOf=(b,r)=>Math.round((30+b.power*.3)*(r<.8?.8:r<1.15?1:r<1.5?1.3:1.8));
+function showBots(){
+  const me=fighterOf(items,"Sen",true), idx=[...DEMOS.keys()].sort(()=>Math.random()-.5).slice(0,6);
+  const bots=idx.map(i=>fighterOf(buildDemo(DEMOS[i].p),DEMOS[i].n,false,[.85,1,1.2,1.45][Math.random()*4|0]));
+  fightCache={me,bots};
+  const tag=r=>r<.8?["Kolay","ok"]:r<1.15?["Dengeli","warn"]:r<1.5?["Zor","bad"]:["Efsane","bad"];
+  showLog(["verdict ok","Rakip seç: senin gücün "+me.power+" (can "+me.max+", hız "+me.spd.toFixed(1)+", savunma %"+Math.round(me.def*100)+")"],[]);
+  $("#log").insertAdjacentHTML("beforeend",bots.map((b,i)=>{const r=b.power/me.power,[tg,cl]=tag(r);b.reward=rewardOf(b,r);
+    return '<button class="botrow" data-bot="'+i+'"><b>Bot: '+b.name+'</b><span class="'+cl+'">'+tg+'</span><span class="mu">güç '+b.power+', ödül '+b.reward+' ₺</span></button>'}).join("")
+    +(me.boosted?"":'<div class="mu">İpucu: Devre modunda motor bağlarsan savaşta bonus alırsın.</div>'));
+}
+function startFight(i){
+  const L=fightCache; if(!L)return;
+  L.bot=L.bots[i]; L.botIdx=i; initFighter(L.me,0); initFighter(L.bot,1);
+  const F=fight={me:L.me,bot:L.bot,time:60,proj:[],slow:1,hitstop:0,ending:0,endT:0,over:false,last:0,reward:L.bot.reward,botIdx:i};
+  stopScape(); document.body.classList.add("battle"); $("#bFight").textContent="Çık";
+  $("#logbox").classList.remove("open");
+  $("#items").style.display="none"; $("#circ").style.display="none"; $("#arena").style.display="";
+  $("#wbtn").innerHTML=F.me.atk.map((w,k)=>'<button data-k="w'+k+'">'+w.n+'</button>').join("");
+  document.querySelector('#pad [data-k="auto"]').classList.remove("act");
+  renderArena(); hud(); F.raf=requestAnimationFrame(loop);
+}
+function endFight(){
+  if(!fight)return;
+  cancelAnimationFrame(fight.raf); fight.over=true; fight=null;
+  document.body.classList.remove("battle"); $("#bFight").textContent="Savaş";
+  $("#arena").style.display="none"; $("#arena").innerHTML=""; $("#items").style.display=""; $("#circ").style.display=mode==="circ"?"":"none";
+  $("#logbox").classList.remove("open");
+  mode==="circ"?circLive():draw(); say("Atölyeye döndün.");
+}
+$("#bFight").onclick=()=>{
+  if(fight){endFight();return}
+  if(!items.length){say("Önce bir robot yap ya da Örnek düğmesine bas.");return}
+  sfxTick(); showBots();
+};
+$("#log").addEventListener("click",e=>{
+  const b=e.target.closest("[data-bot]"); if(b){startFight(+b.dataset.bot);return}
+  const a=e.target.closest("[data-act]"); if(!a)return;
+  const k=a.dataset.act;
+  if(k==="again")startFight(fightCache.botIdx);
+  else if(k==="new"){endFight();showBots()}
+  else endFight();
+});
+
+// --- oyuncu denetimi: ekran düğmeleri ve klavye ---
+function pressKey(k,on){
+  const F=fight; if(!F)return; const P=F.me;
+  if(k==="left"||k==="right"||k==="block")P.inp[k]=on?1:0;
+  else if(on&&k==="jump")P.inp.jump=1;
+  else if(on&&/^w\d$/.test(k))P.inp.atk=+k[1];
+  else if(on&&k==="auto"){P.ai=!P.ai;document.querySelector('#pad [data-k="auto"]').classList.toggle("act",P.ai)}
+}
+$("#pad").addEventListener("pointerdown",e=>{const b=e.target.closest("[data-k]");if(!b)return;e.preventDefault();b.setPointerCapture&&b.setPointerCapture(e.pointerId);pressKey(b.dataset.k,true);b.classList.add("dn")});
+["pointerup","pointercancel","lostpointercapture"].forEach(n=>$("#pad").addEventListener(n,e=>{const b=e.target.closest("[data-k]");if(!b)return;pressKey(b.dataset.k,false);b.classList.remove("dn")}));
+const KEYS={ArrowLeft:"left",KeyA:"left",ArrowRight:"right",KeyD:"right",ArrowUp:"jump",KeyW:"jump",ArrowDown:"block",KeyS:"block",KeyJ:"w0",Space:"w0",KeyK:"w1",KeyL:"w2"};
+addEventListener("keydown",e=>{if(fight&&KEYS[e.code]&&!e.repeat){e.preventDefault();pressKey(KEYS[e.code],true)}});
+addEventListener("keyup",e=>{if(fight&&KEYS[e.code])pressKey(KEYS[e.code],false)});
+
 /* ========== 7) ÇİZİM VE ARAYÜZ ========== */
 const tf=i=>`translate(${i.x} ${i.y}) rotate(${i.r}) scale(${i.s})`;
 function draw(plan,pw){ // plan: parça id -> animasyon bilgisi; pw: enerjili bölümler (Set), null = hepsi (devresiz önizleme)
+  if(fight)return; // savaş sırasında atölye çizilmez
   const A=g=>!pw||pw.has(g), root=$("#items"), act=new Set();
   const hasW=!!plan&&[...plan.values()].some(q=>q.locG==="wheel");
   let span=0;
@@ -901,19 +1464,27 @@ function draw(plan,pw){ // plan: parça id -> animasyon bilgisi; pw: enerjili b�
   root.classList.toggle("driving",span>10);
   root.style.setProperty("--dd",span+"px");
   root.style.setProperty("--dt",Math.max(1.4,2*span/90).toFixed(2)+"s");
+  const pins=new Set(); // eklem pimleri: kol, bacak, kuyruk ve boyun gövdeye bu noktadan tutunur
+  if(mode!=="circ")(plan||buildRig().plan).forEach(q=>{if(q.rig)pins.add(q.rig.ox+","+q.rig.oy)});
+  const pinsHtml='<g pointer-events="none" class="'+(plan&&A("body")?"bob":"")+'">'+[...pins].map(k=>{const [px,py]=k.split(",");
+    return '<circle cx="'+px+'" cy="'+py+'" r="5.5" fill="url(#gD)" stroke="#555e6d"/><circle cx="'+px+'" cy="'+py+'" r="2" fill="#2c323c"/>'}).join("")+"</g>";
   root.innerHTML=items.map(i=>{
     const p=PARTS[i.t], x=-p.w/2, y=-p.h/2, q=(plan&&plan.get(i.id))||{};
     const r=q.rig&&A(q.rigG)?q.rig:null, bob=q.bob&&A("body"), loc=q.loc&&A(q.locG)?q.loc:"";
     const lit=pw&&pw.has("light")&&(q.locG==="eye"||q.locG==="light")?" lit":"";
     const rs=r?"--ox:"+r.ox+"px;--oy:"+r.oy+"px;--a:"+r.a+";--d:"+r.d+"s;--dl:"+r.dl+"s":"";
     const puff=q.smoke&&A("engine")?'<g transform="translate('+(x-3)+' 0)"><circle class="pf" r="4"/><circle class="pf" style="animation-delay:.4s" r="4"/><circle class="pf" style="animation-delay:.8s" r="4"/></g>':"";
+    const flo=i.t==="flame"&&!(plan&&A("engine"))?" flo":""; // alev yalnız motor çalışırken parlar
     const wd=loc==="roll"?"--wd:"+Math.round((span>10?2*span/(p.w*i.s/2):12.5)*57.3)+"deg":""; // yol/yarıçap kadar döner
     if(r)act.add(q.rigG); if(bob)act.add("body"); if(loc)act.add(q.locG); if(puff)act.add("engine");
-    return `<g data-id="${i.id}" class="${i.id===selId?"sel":""}"><g class="${bob?"bob":""}"><g class="${r?"rig swing":""}" style="${rs}">`
+    return `<g data-id="${i.id}" class="${i.id===selId?"sel":""}${flo}"><g class="${bob?"bob":""}"><g class="${r?"rig swing":""}" style="${rs}">`
       +`<g filter="url(#sh)"><g class="tf" transform="${tf(i)}"><g class="loc ${loc}${lit}" style="${wd}">`
       +`<use href="#p-${i.t}" x="${x}" y="${y}" width="${p.w}" height="${p.h}"/>${puff}</g></g></g>`
       +`<g class="tf" transform="${tf(i)}"><rect class="selr" x="${x-3}" y="${y-3}" width="${p.w+6}" height="${p.h+6}"/></g></g></g></g>`;
-  }).join("");
+  }).join("")+pinsHtml;
+  const top=items.length?Math.min(...items.map(i=>i.y-hext(i).hy)):0, lift=Math.max(0,Math.min(26,top-8)); // pervane ya da alev varsa havalanır
+  root.style.setProperty("--lift",lift+"px");
+  root.classList.toggle("flying",mode!=="circ"&&span<=10&&lift>6&&(act.has("prop")||(act.has("engine")&&items.some(i=>i.t==="flame"))));
   setScape(act,span>10?Math.max(1.4,2*span/90):0);
 }
 const movePart=i=>$$('[data-id="'+i.id+'"] .tf').forEach(g=>g.setAttribute("transform",tf(i)));
@@ -940,7 +1511,7 @@ function fit(){
   stage.setAttribute("viewBox","0 0 "+nw+" "+nh);
   const set=(id,o)=>{const el=$(id);for(const k in o)el.setAttribute(k,o[k])};
   set("#bg",{width:nw,height:nf}); set("#fl",{y:nf,width:nw,height:nh-nf}); set("#fl2",{y:nf,width:nw});
-  if(mode==="circ")circLive();else draw();
+  if(fight)renderArena();else if(mode==="circ")circLive();else draw();
 }
 
 // Envanter: gerçek parça çizimleriyle küçük resimler
@@ -961,7 +1532,7 @@ $("#tabs").onclick=e=>{const b=e.target.closest("[data-g]");if(b)showTab(b.datas
 const pt=e=>{const p=stage.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(stage.getScreenCTM().inverse())};
 function add(t,x,y){
   if(mode==="circ")return addComp(t,x,y);
-  const i={id:nid++,t,x,y,r:0,s:1}; items.push(i); settle(i); selId=i.id; draw(); sfxPlace(t);
+  const i={id:nid++,t,x,y,r:0,s:1}; items.push(i); snap(i); settle(i); selId=i.id; draw(); sfxPlace(t);
 }
 const markArm=()=>$$(".item").forEach(el=>el.classList.toggle("sel",el.dataset.t===arm));
 
@@ -973,6 +1544,7 @@ inv.addEventListener("pointerdown",e=>{
   drag={k:"new",t:b.dataset.t,x:e.clientX,y:e.clientY,moved:false};
 });
 stage.addEventListener("pointerdown",e=>{
+  if(fight)return;
   if(mode==="circ")return circDown(e);
   const g=e.target.closest("[data-id]");
   if(g){
@@ -996,6 +1568,7 @@ addEventListener("pointermove",e=>{
 addEventListener("pointerup",e=>{
   if(!drag)return;
   const d=drag; drag=null; ghost?.remove(); ghost=null;
+  if(d.k==="move"){if(d.moved){snap(d.i);settle(d.i);draw()}return}
   if(d.k!=="new")return;
   if(d.moved){
     const r=stage.getBoundingClientRect();
@@ -1012,7 +1585,8 @@ const ACT={
   rotL:i=>{i.r-=15}, rotR:i=>{i.r+=15},
   big:i=>{i.s=Math.min(2.5,+(i.s*1.1).toFixed(2))}, small:i=>{i.s=Math.max(.4,+(i.s/1.1).toFixed(2))},
   copy:i=>{const c={...i,id:nid++,x:i.x+16,y:i.y-8};items.push(c);selId=c.id},
-  front:i=>{items.splice(items.indexOf(i),1);items.push(i)},
+  front:i=>{items.splice(items.indexOf(i),1);items.push(i);say("Parça öne alındı.")},
+  back:i=>{items.splice(items.indexOf(i),1);items.unshift(i);say("Parça arkaya alındı.")}, // çizim sırasının en gerisine
   del:i=>{items.splice(items.indexOf(i),1);selId=null;sfxDel()}
 };
 $("#tools").onclick=e=>{
@@ -1030,12 +1604,12 @@ $("#tools").onclick=e=>{
 // yön: T üstüne, B altına, L soluna, R sağına dayanır; C üstüne biner. Parçalar birbirine değecek şekilde hesaplanır.
 const DEMOS=[
  {n:"Balerin",p:[["pan",-1,"",0,0,1.25],["spoon",0,"T",-20,0,.85],["spoon",0,"T",20,0,.85],["tin",1,"T",20,0,1],["can",3,"T",0,0,1],["spring",4,"T",0,0,1],["bowl",5,"T",0,0,1],["gear",6,"C",-17,0,.8,0],["gear",6,"C",17,0,.8,0],["fork",4,"L",-22,-80,.8],["fork",4,"R",-30,40,.8]]},
- {n:"Et tokmaklı savaşçı",p:[["spoon",-1,"",-32,0,.95],["spoon",-1,"",32,0,.95],["bcan",0,"T",32,0,1],["bowl",2,"T",0,0,1.05],["tin",3,"T",0,0,.9],["washer",3,"C",-15,0,.8,-2],["washer",3,"C",15,0,.8,-2],["tab",3,"C",0,90,.5,14],["hook",3,"L",-14,-40,.45],["hook",3,"R",-14,40,.45],["masher",2,"R",-28,25,.9],["chain",2,"L",-10,-75,.8],["lid",2,"C",-14,0,.55,12]]},
- {n:"Çığlıkçı",p:[["woodbox",-1,""],["spoon",0,"T",-24,8,.85],["spoon",0,"T",24,-8,.85],["soda",1,"T",24,0,1],["tuna",3,"T",0,0,1.15],["spring",4,"T",-28,-25,.9],["spring",4,"T",-9,-8,.9],["spring",4,"T",9,8,.9],["spring",4,"T",28,25,.9],["gear",4,"C",-16,0,.75,-6],["knob",4,"C",14,0,.9,-6],["tab",4,"C",0,0,.8,12],["fork",3,"R",18,35,.85],["fork",3,"L",18,-35,.85]]},
+ {n:"Et tokmaklı savaşçı",p:[["spoon",-1,"",-32,0,.95],["spoon",-1,"",32,0,.95],["bcan",0,"T",32,0,1],["bowl",2,"T",0,0,1.05],["tin",3,"T",0,0,.9],["washer",3,"C",-15,0,.8,-2],["washer",3,"C",15,0,.8,-2],["tab",3,"C",0,90,.5,14],["hook",3,"L",-14,-40,.45],["hook",3,"R",-14,40,.45],["masher",2,"R",-28,25,.9,0,16],["chain",2,"L",-10,-75,.8],["lid",2,"C",-14,0,.55,12]]},
+ {n:"Çığlıkçı",p:[["woodbox",-1,""],["spoon",0,"T",-24,8,.85],["spoon",0,"T",24,-8,.85],["soda",1,"T",24,0,1],["tuna",3,"T",0,0,1.15],["spring",4,"T",-28,-25,.9],["spring",4,"T",-9,-8,.9],["spring",4,"T",9,8,.9],["spring",4,"T",28,25,.9],["gear",4,"C",-16,0,.75,-6],["knob",4,"C",14,0,.9,-6],["tab",4,"C",0,0,.8,12],["fork",3,"R",18,35,.85,0,14],["fork",3,"L",18,-35,.85,0,14]]},
  {n:"Maymun",p:[["rod",-1,"",-30,0,.9],["rod",-1,"",30,0,.9],["cube",0,"T",30,0,1],["bowl",2,"T",0,0,1],["nut",3,"C",-14,0,.9,-4],["nut",3,"C",14,0,.9,-4],["tab",3,"C",0,0,.5,12],["rod",2,"L",-6,-20,.8],["rod",2,"R",-6,20,.8],["hook",2,"R",22,0,.9]]},
- {n:"Kedi",p:[["rod",-1,"",-34,0,.8],["rod",-1,"",34,0,.8],["tuna",0,"T",34,0,1.1],["bowl",2,"T",0,0,.8],["sheet",3,"T",-22,-12,.8],["sheet",3,"T",22,12,.8],["eye",3,"C",-12,0,.55,0],["eye",3,"C",12,0,.55,0],["tab",3,"C",0,0,.35,12],["bolt",3,"L",8,-8,.6],["bolt",3,"L",14,8,.6],["bolt",3,"R",8,8,.6],["bolt",3,"R",14,-8,.6],["hook",2,"R",-6,0,.9]]},
+ {n:"Kedi",p:[["rod",-1,"",-34,0,.8],["rod",-1,"",34,0,.8],["tuna",0,"T",34,0,1.1],["bowl",2,"T",0,0,.8],["sheet",3,"T",-22,-12,.8],["sheet",3,"T",22,12,.8],["eye",3,"C",-12,0,.55,0],["eye",3,"C",12,0,.55,0],["tab",3,"C",0,0,.35,12],["bolt",3,"L",8,-8,.6],["bolt",3,"L",14,8,.6],["bolt",3,"R",8,8,.6],["bolt",3,"R",14,-8,.6],["hook",2,"R",34,0,.9]]},
  {n:"Gözlüklü küre",p:[["plank",-1,""],["ball",0,"T",0,0,1.3],["bowl",1,"T",0,0,.9],["brush",2,"T",0,0,1.2],["washer",2,"C",-16,0,1,-2],["washer",2,"C",16,0,1,-2],["eye",2,"C",-16,0,.6,-2],["eye",2,"C",16,0,.6,-2],["tab",2,"C",0,0,.5,14],["fork",1,"L",-6,-60,.7],["pliers",1,"R",-6,55,.7]]},
- {n:"Kayakçı",p:[["knife",-1,"",-46,90,.7],["knife",-1,"",46,90,.7],["spoon",0,"T",20,6,.8],["spoon",1,"T",-20,-6,.8],["bcan",2,"T",26,0,1],["cube",4,"T",0,0,.9],["brush",5,"T",-10,0,1],["eye",5,"C",-12,0,.6,-4],["eye",5,"C",12,0,.6,-4],["spatula",4,"L",-10,-30,.9],["stick",4,"R",0,25,.9]]},
+ {n:"Kayakçı",p:[["knife",-1,"",-46,90,.7],["knife",-1,"",46,90,.7],["spoon",0,"T",20,6,.8],["spoon",1,"T",-20,-6,.8],["bcan",2,"T",26,0,1],["cube",4,"T",0,0,.9],["brush",5,"T",-10,0,1],["eye",5,"C",-12,0,.6,-4],["eye",5,"C",12,0,.6,-4],["spatula",4,"L",-10,-30,.9,0,12],["stick",4,"R",0,25,.9,0,12]]},
  {n:"Çubuk atlı",p:[["disc",-1,""],["spoon",0,"T",-24,0,.85],["spoon",0,"T",24,0,.85],["can",1,"T",24,0,.9],["bowl",3,"T",0,0,.85],["funnel",4,"T",0,180,.6],["eye",4,"C",-12,0,.8,-2],["eye",4,"C",12,0,.8,-2],["fork",3,"L",-10,-50,.85],["stick",3,"R",10,90,.8],["block",9,"R",0,0,.9],["eye",10,"C",-10,0,.7,-6],["spoon",10,"T",0,20,.6]]},
  {n:"Paten fare",p:[["disc",-1,""],["wheel",0,"T",-46,0,.8],["wheel",0,"T",-18,0,.8],["wheel",0,"T",18,0,.8],["wheel",0,"T",46,0,.8],["rod",1,"T",14,0,.8],["rod",4,"T",-14,0,.8],["can",5,"T",32,0,.75],["bowl",7,"T",0,0,.7],["funnel",8,"L",4,90,.7],["dial",8,"T",14,0,.8],["eye",8,"C",8,0,.5,-2],["hook",7,"R",18,0,1],["fork",7,"L",-8,-70,.6],["fork",7,"R",-8,70,.6]]},
  {n:"Tek tekerlekli",p:[["disc",-1,""],["wheel",0,"T",0,0,2],["spoon",1,"T",-18,15,.55],["spoon",1,"T",18,-15,.55],["tin",2,"T",18,0,.85],["spice",4,"T",0,0,.9],["bowl",5,"T",0,0,.55],["eye",6,"C",-8,0,.4,-2],["eye",6,"C",8,0,.4,-2],["knob",6,"T",0,0,.5],["fork",5,"L",-14,-80,.6],["stick",5,"R",-10,15,.6],["tin",11,"T",0,0,.8]]},
@@ -1046,15 +1620,39 @@ const DEMOS=[
  {n:"Spor araba",p:[["shell",-1,"",0,0,1.1],["tire",0,"C",-52,0,1,10],["tire",0,"C",52,0,1,10],["spoiler",0,"C",-70,0,.9,-12],["bumper",0,"R",-2,90,.8],["steer",0,"C",20,0,.6,-8],["seat",0,"C",-4,0,.6,-4],["lamp",0,"R",-6,0,.5],["pipe",0,"L",12,0,.7],["engine",0,"C",56,0,.55,-26]]},
  {n:"Jip",p:[["tire",-1,"",-62,0,1.3],["tire",-1,"",62,0,1.3],["frame",0,"T",62,0,.9],["box",2,"T",-30,0,.9],["cab",2,"T",32,0,.85],["engine",2,"T",76,0,.6],["pipe",2,"L",-8,0,.7],["steer",4,"C",-6,0,.55,-6],["lamp",4,"R",18,0,.6],["bumper",2,"R",0,90,.8]]},
  {n:"Canavar kamyon",p:[["tire",-1,"",-62,0,1.8],["tire",-1,"",62,0,1.8],["frame",0,"T",62,0,.9],["shell",2,"T",0,0,.9],["engine",3,"T",40,0,.6],["pipe",3,"T",-34,90,.8],["lamp",3,"R",-4,0,.5],["steer",3,"C",8,0,.5,-6],["bumper",3,"R",8,90,.7]]},
- {n:"Hurda kamyon",p:[["tire",-1,"",-82,0,1],["tire",-1,"",-38,0,1],["tire",-1,"",70,0,1],["frame",0,"T",82,0,1.1],["box",3,"T",-34,0,1.1],["cab",3,"T",76,0,.95],["pipe",3,"T",36,90,.8],["lamp",5,"R",14,0,.5],["bumper",3,"R",0,90,.8],["steer",5,"C",-6,0,.5,-6]]}
+ {n:"Hurda kamyon",p:[["tire",-1,"",-82,0,1],["tire",-1,"",-38,0,1],["tire",-1,"",70,0,1],["frame",0,"T",82,0,1.1],["box",3,"T",-34,0,1.1],["cab",3,"T",76,0,.95],["pipe",3,"T",36,90,.8],["lamp",5,"R",14,0,.5],["bumper",3,"R",0,90,.8],["steer",5,"C",-6,0,.5,-6]]},
+ {n:"Somun köpek",p:[["foot",-1,"",-26,0,1],["foot",-1,"",26,0,1],["rod",0,"T",0,0,.75],["rod",1,"T",0,0,.75],["bignut",2,"T",26,0,1],["rod",4,"T",14,25,.7],["bowl",5,"T",12,-10,.55],["nut",6,"C",-6,0,.6,-6],["nut",6,"C",8,0,.6,-6],["sheet",6,"L",6,-20,.5],["sheet",6,"R",6,20,.5],["knob",6,"R",4,0,.5],["tail",4,"R",-6,0,.9]]},
+ {n:"Somun deve",p:[["foot",-1,"",-62,0,.9],["foot",-1,"",-22,0,.9],["foot",-1,"",22,0,.9],["foot",-1,"",62,0,.9],["rod",0,"T",0,0,.8],["rod",1,"T",0,0,.8],["rod",2,"T",0,0,.8],["rod",3,"T",0,0,.8],["bignut",5,"T",-10,0,1],["bignut",6,"T",10,0,1],["bignut",8,"T",32,0,.9],["rod",9,"T",16,35,.8],["bowl",11,"T",14,-15,.6],["nut",12,"C",-8,0,.6,-6],["nut",12,"C",8,0,.6,-6],["sheet",12,"T",-2,10,.5],["knob",12,"R",2,0,.5],["tail",8,"L",-6,0,.8,0,24]]},
+ {n:"Zürafa köpek",p:[["bball",-1,"",-34,0,.45],["bball",-1,"",34,0,.45],["rod",0,"T",0,8,.8],["rod",1,"T",0,-8,.8],["bignut",2,"T",34,0,.9],["rod",4,"T",8,15,1],["bowl",5,"T",16,-10,.6],["nut",6,"C",-6,0,.55,-6],["nut",6,"C",8,0,.55,-6],["sheet",6,"L",8,-25,.5],["tail",4,"R",-6,0,.9]]},
+ {n:"Çelik at",p:[["hoof",-1,"",-44,0,1],["hoof",-1,"",44,0,1],["rod",0,"T",0,0,.6],["rod",1,"T",0,0,.6],["drum",2,"T",44,0,1],["tube",4,"T",36,0,.9],["bowl",5,"T",14,-10,.9],["eye",6,"C",-12,0,.55,-4],["eye",6,"C",10,0,.55,-4],["sheet",6,"T",-18,-20,.5],["nail",6,"T",-8,-10,1],["nail",6,"T",4,0,1],["nail",6,"T",16,10,1],["tail",4,"L",-10,0,.8,0,24]]},
+ {n:"Bakır at",p:[["disc",-1,""],["hoof",0,"T",-40,0,.8],["hoof",0,"T",40,0,.8],["rod",1,"T",0,0,.6],["rod",2,"T",0,0,.6],["cdrum",3,"T",40,0,1],["tube",5,"T",34,20,.8],["bowl",6,"T",12,-15,.7],["horn",7,"T",-8,-25,.5],["nut",7,"C",6,0,.5,-6],["nut",6,"L",-6,0,.5],["nut",6,"L",8,0,.5],["tail",5,"L",-4,0,.8,0,24]]},
+ {n:"Atlı kovboy",p:[["disc",-1,""],["hoof",0,"T",-30,0,.8],["hoof",0,"T",30,0,.8],["rod",1,"T",0,0,.55],["rod",2,"T",0,0,.55],["bignut",3,"T",30,0,1],["tube",5,"T",26,25,.7],["bowl",6,"T",18,10,.6],["nut",7,"C",-6,0,.5,-4],["sheet",7,"T",-4,-20,.5],["cdrum",5,"T",-6,80,.6],["knob",10,"T",0,0,.8],["tin",11,"T",0,0,.5],["rod",10,"R",-12,50,.5],["tail",5,"L",-6,0,.7,0,22]]},
+ {n:"Arı",p:[["bleg",-1,"",-38,14,.85],["bleg",-1,"",-14,5,.85],["bleg",-1,"",14,-5,.85],["bleg",-1,"",38,-14,.85],["watch",1,"T",14,0,1],["bball",4,"L",-14,0,.9],["knob",4,"R",0,0,1.2],["wing",4,"T",-14,-28,.9],["wing",4,"T",14,28,.9],["nail",6,"T",-4,-20,.8],["nail",6,"T",6,20,.8]]},
+ {n:"Boynuzlu böcek",p:[["bleg",-1,"",-40,16,.9],["bleg",-1,"",-16,6,.9],["bleg",-1,"",16,-6,.9],["bleg",-1,"",40,-16,.9],["cube",1,"T",16,0,1],["elytra",4,"L",-4,-6,.95],["elytra",4,"R",-4,6,.95],["horn",4,"T",0,0,1.2],["gear",4,"C",0,0,.9,-6]]},
+ {n:"Örümcek",p:[["bleg",-1,"",-47,30,1],["bleg",-1,"",-60,50,1],["bleg",-1,"",-69,70,1],["bleg",-1,"",47,-30,1],["bleg",-1,"",60,-50,1],["bleg",-1,"",69,-70,1],["watch",1,"C",60,0,1.6,-46],["bcan",6,"T",0,0,.45],["knob",7,"T",0,0,.6],["nail",6,"B",-10,8,.6],["nail",6,"B",10,-8,.6]]},
+ {n:"Saat örümceği",p:[["bleg",-1,"",-43,25,1],["bleg",-1,"",-55,42,1],["bleg",-1,"",-64,58,1],["bleg",-1,"",-70,75,1],["bleg",-1,"",43,-25,1],["bleg",-1,"",55,-42,1],["bleg",-1,"",64,-58,1],["bleg",-1,"",70,-75,1],["watch",1,"C",55,0,1.5,-37],["bcan",8,"T",0,0,.5],["knob",9,"T",0,0,.6],["nail",8,"B",-10,8,.6],["nail",8,"B",10,-8,.6]]},
+ {n:"Akrep",p:[["bleg",-1,"",-56,35,.85],["bleg",-1,"",-67,55,.85],["bleg",-1,"",-73,75,.85],["bleg",-1,"",56,-35,.85],["bleg",-1,"",67,-55,.85],["bleg",-1,"",73,-75,.85],["drum",1,"C",67,0,.8,-31],["claw",6,"L",-14,-35,.95],["claw",6,"R",-14,35,.95],["tail",6,"T",26,0,2],["horn",9,"T",20,35,.5],["nut",6,"T",-14,0,.5],["nut",6,"T",14,0,.5]]},
+ {n:"Mekanik balık",p:[["plank",-1,"",0,0,.9],["tube",0,"T",-40,0,.55],["tube",0,"T",40,0,.55],["cdrum",1,"T",40,0,1.25],["bowl",3,"R",-6,90,1],["gear",4,"C",4,0,1.3,-8],["jaw",3,"R",22,0,.9,0,12],["fin",3,"L",0,0,1.1],["bolt",3,"T",-44,90,.6],["bolt",3,"T",-22,90,.6],["bolt",3,"T",0,90,.6],["bolt",3,"T",22,90,.6]]},
+ {n:"Zincir traktör",p:[["chainwheel",-1,"",-58,0,1.3],["chainwheel",-1,"",58,0,1.3],["frame",0,"T",58,0,.9],["engine",2,"T",-40,0,1.1],["pipe",3,"T",-14,90,1],["seat",2,"T",34,0,.9],["steer",5,"C",-16,0,.8,-8],["rod",2,"T",24,0,.6],["rod",2,"T",62,0,.6],["plate",7,"T",19,0,.55]]},
+ {n:"Kerpeten kertenkele",p:[["elbow",-1,"",-50,0,.8],["elbow",-1,"",-24,0,.8],["elbow",-1,"",22,0,.8],["elbow",-1,"",48,0,.8],["vgrip",1,"T",24,0,.9],["nut",4,"C",46,0,.8,-6]]},
+ {n:"Chopper motor",p:[["tire",-1,"",-85,0,1.2],["tire",-1,"",85,0,1.2],["frame",0,"T",85,0,.95],["engine",2,"T",4,0,1],["fueltank",3,"T",-4,0,1],["seat",2,"T",-62,0,1],["pipe",2,"B",-18,0,1.2],["tube",1,"T",-14,-28,1.1],["bar",7,"T",-12,0,.9],["lamp",7,"R",-20,0,.5]]},
+ {n:"Bronz motor",p:[["chainwheel",-1,"",-78,0,1.35],["chainwheel",-1,"",78,0,1.35],["frame",0,"T",78,0,.85],["engine",2,"T",-4,0,.9],["fueltank",3,"T",0,0,.9],["drum",2,"T",-52,0,.5],["tube",1,"T",-12,-25,1.1],["bar",6,"T",-10,0,.8],["fender",1,"T",-4,0,.9]]},
+ {n:"Rulman motor",p:[["plank",-1,"",0,0,.9],["bearing",0,"T",-50,0,1],["bearing",0,"T",50,0,1],["frame",1,"T",50,0,.55],["engine",3,"T",0,0,.6],["seat",3,"T",-34,0,.6],["tube",2,"T",-10,-25,.9],["bar",6,"T",-8,0,.6]]},
+ {n:"Ekskavatör",p:[["plank",-1,"",0,0,.9],["track",0,"T",0,0,.95],["drum",1,"T",0,0,.6],["box",2,"T",-6,0,.7],["pipe",3,"T",-26,90,.6],["boom",3,"R",-24,100,.85],["bucket",5,"R",14,0,.6]]},
+ {n:"Jet uçak",p:[["rod",-1,"",-34,0,.5],["rod",-1,"",34,0,.5],["fuselage",0,"T",34,0,1],["plate",2,"C",0,0,1.1,2],["tube",3,"B",-52,90,.55],["tube",3,"B",52,90,.55],["rfin",2,"T",-48,0,.6],["flame",4,"L",0,90,.5],["flame",5,"L",0,90,.5]]},
+ {n:"Tank",p:[["track",-1,"",0,0,1.2],["hull",0,"T",0,0,1],["bignut",1,"T",-8,0,.9],["cannon",2,"R",-4,-8,1],["hook",2,"T",-22,0,.55]]},
+ {n:"Dişli traktör",p:[["gearwheel",-1,"",-62,0,1],["gearwheel",-1,"",62,0,1],["frame",0,"T",62,0,.8],["engine",2,"T",-30,0,1],["pipe",3,"T",-12,90,1],["steer",2,"T",20,0,.9],["seat",2,"T",46,0,.8]]},
+ {n:"Roket",p:[["rfin",-1,"",-30,-6,1],["rfin",-1,"",30,6,1],["rbody",0,"T",30,0,1],["rcone",2,"T",0,0,1],["lamp",2,"C",0,0,1.2,-10],["bowl",2,"B",0,180,.6],["flame",5,"B",0,0,.6]]},
+ {n:"Helikopter",p:[["stick",-1,"",0,90,.8],["stick",0,"T",-30,0,.5],["stick",0,"T",30,0,.5],["pet",1,"T",30,0,1],["knob",3,"T",0,0,.9],["rotor",4,"T",0,0,1],["stick",3,"R",-14,80,.9],["prop",6,"R",-4,0,.35]]},
+ {n:"Çift kanatlı uçak",p:[["tire",-1,"",-26,0,.6],["tire",-1,"",26,0,.6],["rod",0,"T",0,0,.35],["rod",1,"T",0,0,.35],["fuselage",2,"T",26,0,1],["plate",4,"C",0,0,.95,8],["rod",5,"T",-44,0,.5],["rod",5,"T",44,0,.5],["plate",6,"T",44,0,.95],["prop",4,"R",0,0,.8],["rfin",4,"T",-52,0,.5]]}
 ];
 function buildDemo(spec){
   const out=[];
-  spec.forEach(([t,ref,side,o=0,r=0,s=1,o2=0])=>{
+  spec.forEach(([t,ref,side,o=0,r=0,s=1,o2=0,ov0=4])=>{ // ov0: gövdeye gömülme payı (px)
     const c={id:nid++,t,x:VW/2,y:FLOOR,r,s}, H=hext(c);
     if(ref<0){c.y=FLOOR-H.hy;c.x=VW/2+o}
     else{
-      const p=out[ref], P=hext(p), ov=4;
+      const p=out[ref], P=hext(p), ov=ov0;
       if(side==="T"){c.y=p.y-P.hy-H.hy+ov;c.x=p.x+o}
       else if(side==="B"){c.y=p.y+P.hy+H.hy-ov;c.x=p.x+o}
       else if(side==="L"){c.x=p.x-P.hx-H.hx+ov;c.y=p.y+o}
@@ -1070,7 +1668,9 @@ function demoCircuit(){ // robotun gövdesine göre örnek devre: anahtar, iki m
   const rig=buildRig(), R=rig.R, b=rig.body||{x:VW/2,y:FLOOR-200};
   const at=(o,dx,dy,fx,fy)=>o?{x:o.x+dx,y:o.y+dy}:{x:b.x+fx,y:b.y+fy};
   const car=R.wheel.length>=2&&!R.leg.length, bu=items.find(o=>o.t==="bulb"||o.t==="lamp"), wl=R.wheel;
-  const arm=car?at(wl[0],8,-34):at(R.arm[0],0,36,-70,30), leg=car?at(wl[wl.length-1],-8,-34):at(R.leg[0],36,-24,70,70);
+  const pr=R.prop, fl=R.engine; // hava aracında motorlar pervane ya da alevin yanına kurulur
+  const arm=car?at(wl[0],8,-34):pr.length?at(pr[0],0,-34):fl.length?at(fl[0],-30,0):at(R.arm[0],0,36,-70,30);
+  const leg=car?at(wl[wl.length-1],-8,-34):pr.length?at(pr[pr.length-1],0,34):fl.length?at(fl[fl.length-1],30,0):at(R.leg[0],36,-24,70,70);
   const led=bu?at(bu,0,-40):at(R.head[0],0,-46,0,-80);
   comps=[["battery",b.x,b.y-4],["switch",b.x+84,b.y+30],["motor",arm.x,arm.y],["motor",leg.x,leg.y],["led",led.x,led.y]]
     .map(([t,x,y],i)=>{const c={id:i+1,t,x:Math.round(x),y:Math.round(y)};if(t==="switch")c.on=true;clampC(c);return c});
